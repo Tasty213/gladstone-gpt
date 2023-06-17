@@ -8,7 +8,7 @@ readme = "README.md"
 packages = [{include = "app"}]
 
 [tool.poetry.dependencies]
-python = "^3.11.3"
+python = "3.11.3"
 openapi = "^1.1.0"
 langchain = "^0.0.177"
 python-dotenv = "^1.0.0"

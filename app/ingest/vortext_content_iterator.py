@@ -7,5 +7,5 @@ class VortexContentIterator():
 
     def __iter__(self):
         for file in os.listdir(self.content_path):
-            if file.endswith(".pdf"):
+            if file.endswith(".pdf") or file.endswith(".txt"):
                 yield os.path.join(self.content_path, file)

@@ -12,7 +12,7 @@ def main():
 
         print("\n\nSources:\n")
         for document in source:
-            print(f"Page: {document.metadata['page_number']}")
+            print(f"Page: {document.metadata['source']}")
             print(f"Text chunk: {document.page_content[:160]}...\n")
         print(f"Answer: {answer}")
 

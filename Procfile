@@ -1,1 +1,1 @@
-web: streamlit run ./app/streamlit_app.py
+web: cd app && streamlit run ./streamlit_app.py

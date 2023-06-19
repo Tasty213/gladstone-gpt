@@ -37,7 +37,7 @@ def query(question: str) -> str:
     return answer
 
 
-logo_image = Image.open('./logo.png')
+logo_image = Image.open('./app/logo.png')
 
 # Initialize page and session state
 st.session_state.setdefault('generated', [])

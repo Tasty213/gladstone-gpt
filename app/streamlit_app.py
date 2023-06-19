@@ -13,7 +13,7 @@ def initialize_page():
 
 def handle_query_form():
     with st.form(key='query_form'):
-        user_query = st.text_input('I want to know the lib dems policy on: ', '', key='input',
+        user_query = st.text_input('Ask Gladstone a question on: ', '', key='input',
                                    help='What do you want to know about lib dem policy?')
         submit_button = st.form_submit_button('Submit')
     return user_query, submit_button

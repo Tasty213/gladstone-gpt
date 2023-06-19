@@ -5,16 +5,16 @@ from query.vortex_query import VortexQuery
 
 
 def initialize_page():
-    st.set_page_config(page_title='DocuVortex', page_icon=':books:')
+    st.set_page_config(page_title='Gladstone GPT', page_icon=':books:')
     st.image(logo_image, width=80)
-    st.header("NeonShield DocuVortex")
-    st.markdown("[Github](https://github.com/pkalkman/python-docuvortex)")
+    st.header("Gladstone GPT")
+    st.markdown("[Github](https://github.com/Tasty213/gladstone-gpt)")
 
 
 def handle_query_form():
     with st.form(key='query_form'):
-        user_query = st.text_input('Search for: ', '', key='input',
-                                   help='Enter your search query?')
+        user_query = st.text_input('I want to know the lib dems policy on: ', '', key='input',
+                                   help='What do you want to know about lib dem policy?')
         submit_button = st.form_submit_button('Submit')
     return user_query, submit_button
 

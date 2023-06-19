@@ -8,6 +8,7 @@ def initialize_page():
     st.set_page_config(page_title='Gladstone GPT', page_icon=':books:')
     st.image(logo_image, width=80)
     st.header("Gladstone GPT")
+    st.write("This is a AI Chatbot with access to the Liberal Democray 2019 manifesto and articles from the party website. You can ask the chatbot any question and it will try to find an answer within the provided documentation. It can't generate new policy and can't argue in favour of policy only state in a concise manor.")
     st.markdown("[Github](https://github.com/Tasty213/gladstone-gpt)")
 
 

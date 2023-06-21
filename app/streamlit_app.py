@@ -2,6 +2,7 @@ import streamlit as st
 from streamlit_chat import message
 from PIL import Image
 from query.vortex_query import VortexQuery
+from langchain.schema import Document
 import json
 
 def initialize_page():
@@ -13,7 +14,7 @@ def initialize_page():
     st.markdown("[Github](https://github.com/Tasty213/gladstone-gpt)")
 
 
-def handle_query_form():
+def handle_query_form() -> tuple[str, bool]:
     with st.form(key='query_form'):
         user_query = st.text_input('Ask Gladstone:', '', key='input',
                                    help='Enter a question about Lib Dem policy.')
@@ -28,7 +29,7 @@ def display_chat_history():
         message(ai_msg, key=f"ai_{i}")
 
 
-def query(question: str) -> str:
+def query(question: str) -> tuple[str, list[Document]]:
     """
     Query the VortexQuery model with the provided question
     :param question: The question to ask the model
@@ -50,7 +51,15 @@ user_query, submit_button = handle_query_form()
 
 if submit_button and user_query:
     answer, source = query(user_query)
+    
+    source_text = "\n".join([json.dumps(document.metadata) for document in source])
+    
+    output_text =f"""{answer}
+
+My sources for this are:
+{source_text}"""
+
     st.session_state.past.append(user_query)
-    st.session_state.generated.append(answer)
+    st.session_state.generated.append(output_text)
 
 display_chat_history()

@@ -2,9 +2,8 @@ from dotenv import load_dotenv
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.schema import AIMessage, HumanMessage
+from langchain.schema import AIMessage, HumanMessage, Document
 from langchain.vectorstores.chroma import Chroma
-
 from settings import COLLECTION_NAME, PERSIST_DIRECTORY
 
 
@@ -14,7 +13,7 @@ class VortexQuery:
         self.chain = self.make_chain()
         self.chat_history = []
 
-    def make_chain(self):
+    def make_chain(self) -> ConversationalRetrievalChain:
         model = ChatOpenAI(
             client=None,
             model="gpt-3.5-turbo",
@@ -34,11 +33,11 @@ class VortexQuery:
             return_source_documents=True,
         )
 
-    def ask_question(self, question: str):
+    def ask_question(self, question: str) -> tuple[str, list[Document]]:
         response = self.chain({"question": question, "chat_history": self.chat_history})
 
-        answer = response["answer"]
-        source = response["source_documents"]
+        answer = response.get("answer")
+        source = response.get("source_documents")
         self.chat_history.append(HumanMessage(content=question))
         self.chat_history.append(AIMessage(content=answer))
 

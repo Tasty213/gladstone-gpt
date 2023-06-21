@@ -3,7 +3,8 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 import langchain.docstore.document as docstore
 from loguru import logger
-from .vortex_blog_parser import VortexBlogParser
+
+from app.ingest.vortex_json_parser import VortexJsonParser
 
 from settings import COLLECTION_NAME, PERSIST_DIRECTORY
 
@@ -18,17 +19,11 @@ class VortexIngester:
 
     def ingest(self) -> None:
         vortex_content_iterator = VortexContentIterator(self.content_folder)
-        vortex_pdf_parser = VortexPdfParser()
-        vortex_blog_parser = VortexBlogParser()
+        vortex_json_parser = VortexJsonParser()
 
         chunks: List[docstore.Document] = []
         for document in vortex_content_iterator:
-            if document.endswith(".pdf"):
-                vortex_pdf_parser.set_pdf_file_path(document)
-                document_chunks = vortex_pdf_parser.clean_text_to_docs()
-                chunks.extend(document_chunks)
-            elif document.endswith(".txt"):
-                chunks.extend(vortex_blog_parser.text_to_docs(document))
+            chunks.extend(vortex_json_parser.text_to_docs(document))
             logger.info(f"Extracted {len(chunks)} chunks from {document}")
 
         embeddings = OpenAIEmbeddings(client=None)

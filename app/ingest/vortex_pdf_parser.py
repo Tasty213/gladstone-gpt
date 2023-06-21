@@ -1,15 +1,16 @@
+from dataclasses import asdict
 import os
 import re
 from datetime import date
 from typing import Callable, Dict, List, Tuple
-
+from app.ingest.metadata import Metadata
 import langchain.docstore.document as docstore
 import langchain.text_splitter as splitter
 import pdfplumber
 from loguru import logger
 from pypdf import PdfReader
 
-from .utils import getattr_or_default
+from app.ingest.utils import getattr_or_default
 
 
 class VortexPdfParser:
@@ -21,8 +22,8 @@ class VortexPdfParser:
             raise FileNotFoundError(f"File not found: {pdf_file_path}")
         self.pdf_file_path = pdf_file_path
 
-    def clean_text_to_docs(self) -> List[docstore.Document]:
-        raw_pages, metadata = self.parse_pdf()
+    def clean_text_to_docs(self, metadata: Metadata) -> List[docstore.Document]:
+        raw_pages, metadata_parsed = self.parse_pdf()
 
         cleaning_functions: List = [
             self.merge_hyphenated_words,
@@ -31,7 +32,7 @@ class VortexPdfParser:
         ]
 
         cleaned_text_pdf = self.clean_text(raw_pages, cleaning_functions)
-        return self.text_to_docs(cleaned_text_pdf, metadata)
+        return self.text_to_docs(cleaned_text_pdf, metadata_parsed, metadata)
 
     def parse_pdf(self) -> Tuple[List[Tuple[int, str]], Dict[str, str]]:
         """Extract and return the pages and metadata from the PDF."""
@@ -88,7 +89,7 @@ class VortexPdfParser:
         return re.sub(r"\n{2,}", "\n", text)
 
     def text_to_docs(self, text: List[Tuple[int, str]],
-                     metadata: Dict[str, str]) -> List[docstore.Document]:
+                     metadata_parsed: Dict[str, str], metadata: Metadata) -> List[docstore.Document]:
         """Split the text into chunks and return them as Documents."""
         doc_chunks: List[docstore.Document] = []
 
@@ -107,7 +108,8 @@ class VortexPdfParser:
                         "page_number": page_num,
                         "chunk": i,
                         "source": f"p{page_num}-{i}",
-                        **metadata,
+                        **asdict(metadata),
+                        **metadata_parsed
                     },
                 )
                 doc_chunks.append(doc)

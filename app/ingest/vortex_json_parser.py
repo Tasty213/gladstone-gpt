@@ -26,9 +26,8 @@ class VortexJsonParser:
                                                                           data.get("author"), 
                                                                           data.get("date")))
             case "json":
-                return [Document(data.get("content"), 
-                                 asdict(Metadata(data.get("link"), 
-                                                 data.get("name"), 
-                                                 data.get("location"), 
-                                                 data.get("author"), 
-                                                 data.get("date"))))]
+                return [Document(page_content=data.get("content"), 
+                                 metadata=asdict(Metadata(data.get("link", "https://www.libdems.org.uk"), 
+                                                 data.get("name", "Lib Dem Website"), 
+                                                 data.get("author", "Liberal Democrats"), 
+                                                 data.get("date", "Unkown"))))]

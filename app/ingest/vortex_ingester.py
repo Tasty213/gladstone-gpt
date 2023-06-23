@@ -22,9 +22,12 @@ class VortexIngester:
         vortex_json_parser = VortexJsonParser()
 
         chunks: List[docstore.Document] = []
-        for document in vortex_content_iterator:
-            chunks.extend(vortex_json_parser.text_to_docs(document))
-            logger.info(f"Extracted {len(chunks)} chunks from {document}")
+        try:
+            for document in vortex_content_iterator:
+                chunks.extend(vortex_json_parser.text_to_docs(document))
+                logger.info(f"Extracted {len(chunks)} chunks from {document}")
+        except Exception as e:
+            print(f"failed to ingest {document} because {e.with_traceback()}")
 
         embeddings = OpenAIEmbeddings(client=None)
         logger.info("Loaded embeddings")

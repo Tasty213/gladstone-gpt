@@ -26,7 +26,7 @@ def display_chat_history():
     for i, (user_msg, ai_msg) in enumerate(zip(st.session_state['past'][::-1],
                                                st.session_state['generated'][::-1])):
         message(user_msg, is_user=True, key=f"user_{i}")
-        message(ai_msg, key=f"ai_{i}")
+        message(ai_msg, key=f"ai_{i}", allow_html = True)
 
 
 def query(question: str) -> tuple[str, list[Document]]:
@@ -50,9 +50,14 @@ initialize_page()
 user_query, submit_button = handle_query_form()
 
 if submit_button and user_query:
-    answer, source = query(user_query)
+    answer, sources = query(user_query)
     
-    source_text = "\n".join([json.dumps(document.metadata) for document in source])
+    source_text_list = set()
+    for source in sources:
+        metadata = source.metadata
+        source_text = f"[{metadata.get('name')}]({metadata.get('link')})"
+        source_text_list.add(source_text)
+    source_text = "\n".join(source_text_list)
     
     output_text =f"""{answer}
 

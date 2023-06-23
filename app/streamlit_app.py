@@ -1,3 +1,4 @@
+from openai import InvalidRequestError
 import streamlit as st
 from streamlit_chat import message
 from PIL import Image
@@ -50,21 +51,26 @@ initialize_page()
 user_query, submit_button = handle_query_form()
 
 if submit_button and user_query:
-    answer, sources = query(user_query)
-    
-    source_text_list = set()
-    for source in sources:
-        metadata = source.metadata
-        source_text = f"[{metadata.get('name')}]({metadata.get('link')})"
-        source_text_list.add(source_text)
-    source_text = "\n".join(source_text_list)
-    
-    output_text =f"""{answer}
+    try:
+        answer, sources = query(user_query)
+        
+        source_text_list = set()
+        for source in sources:
+            metadata = source.metadata
+            source_text = f"[{metadata.get('name')}]({metadata.get('link')})"
+            source_text_list.add(source_text)
+        source_text = "\n".join(source_text_list)
+        
+        output_text =f"""{answer}
 
 My sources for this are:
 {source_text}"""
+        
+    except InvalidRequestError as e:
+        output_text = "I'm really sorry but your query has returned back too many results, can you try being precise, writing a longer question or refreshing the page?"
 
     st.session_state.past.append(user_query)
     st.session_state.generated.append(output_text)
+
 
 display_chat_history()

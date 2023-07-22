@@ -7,8 +7,12 @@ import scrapy
 
 
 class BlogItem(scrapy.Item):
+    content = scrapy.Field()
+    metadata = scrapy.Field()
+
+
+class MetadataItem(scrapy.Item):
     link = scrapy.Field()
     name = scrapy.Field()
     date = scrapy.Field()
-    content = scrapy.Field()
     type = scrapy.Field()

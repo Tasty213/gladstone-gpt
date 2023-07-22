@@ -3,8 +3,7 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.http import request
 from scrapy.http.response.html import HtmlResponse
 import justext
-from LibDemNews.items import BlogItem
-import dateparser
+from LibDemNews.items import BlogItem, MetadataItem
 
 
 class NewsSpider(scrapy.Spider):
@@ -26,10 +25,12 @@ class NewsSpider(scrapy.Spider):
 
         yield BlogItem(
             content="\n".join(paragraphs),
-            date=self.get_date(response),
-            link=response.url,
-            name=heading,
-            type="json",
+            metadata=MetadataItem(
+                date=self.get_date(response),
+                link=response.url,
+                name=heading,
+                type="json",
+            ),
         )
 
     def get_paragraphs_and_headings(self, response: HtmlResponse):

@@ -28,8 +28,9 @@ class BlogPipeline:
 
     def process_item(self, item: BlogItem, spider):
         print(item)
+        item_name = item.get("metadata").get("name")
         output_file_path = Path(
-            f"{self.output_folder}/{self.get_valid_filename(item.get('name'))}.json"
+            f"{self.output_folder}/{self.get_valid_filename(item_name)}.json"
         )
         with open(output_file_path, "w+") as output_file:
             json.dump(

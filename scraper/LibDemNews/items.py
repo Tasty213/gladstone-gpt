@@ -6,7 +6,9 @@
 import scrapy
 
 
-class LibdemnewsItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class BlogItem(scrapy.Item):
+    link = scrapy.Field()
+    name = scrapy.Field()
+    date = scrapy.Field()
+    content = scrapy.Field()
+    type = scrapy.Field()

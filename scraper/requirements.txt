@@ -1,3 +1,4 @@
 scrapy
 justext
 dateparser
+black

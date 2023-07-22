@@ -5,9 +5,42 @@
 
 
 # useful for handling different item types with a single interface
-from itemadapter import ItemAdapter
+import json
+from pathlib import Path
+import re
+from itemadapter.adapter import ItemAdapter
+from scrapy import Spider
+from scrapy.crawler import Crawler
+from LibDemNews.items import BlogItem
 
 
-class LibdemnewsPipeline:
-    def process_item(self, item, spider):
-        return item
+class BlogPipeline:
+    def __init__(self, output_folder):
+        self.output_folder = output_folder
+
+    @classmethod
+    def from_crawler(cls, crawler: Crawler):
+        settings = crawler.settings
+        return cls(settings.get("OUTPUT_FOLDER"))
+
+    def open_spider(self, spider: Spider):
+        Path(self.output_folder).mkdir(parents=True, exist_ok=True)
+
+    def process_item(self, item: BlogItem, spider):
+        print(item)
+        output_file_path = Path(
+            f"{self.output_folder}/{self.get_valid_filename(item.get('name'))}.json"
+        )
+        with open(output_file_path, "w+") as output_file:
+            json.dump(
+                ItemAdapter(item).asdict(),
+                output_file,
+                indent=4,
+            )
+
+    def get_valid_filename(self, name):
+        s = str(name).strip().replace(" ", "_")
+        s = re.sub(r"(?u)[^-\w.]", "", s)
+        if s in {"", ".", ".."}:
+            raise Exception("Could not derive file name from '%s'" % name)
+        return s

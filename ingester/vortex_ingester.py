@@ -3,17 +3,14 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 import langchain.docstore.document as docstore
 from loguru import logger
+from vortex_json_parser import VortexJsonParser
+from vortext_content_iterator import VortexContentIterator
 
-from app.ingest.vortex_json_parser import VortexJsonParser
-
-from settings import COLLECTION_NAME, PERSIST_DIRECTORY
-
-from .vortex_pdf_parser import VortexPdfParser
-from .vortext_content_iterator import VortexContentIterator
+COLLECTION_NAME = "neonshield-2023-05"
+PERSIST_DIRECTORY = "./data/chroma"
 
 
 class VortexIngester:
-
     def __init__(self, content_folder: str):
         self.content_folder = content_folder
 

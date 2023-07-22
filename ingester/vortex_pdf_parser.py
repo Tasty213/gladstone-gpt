@@ -3,14 +3,14 @@ import os
 import re
 from datetime import date
 from typing import Callable, Dict, List, Tuple
-from app.ingest.metadata import Metadata
+from metadata import Metadata
 import langchain.docstore.document as docstore
 import langchain.text_splitter as splitter
 import pdfplumber
 from loguru import logger
 from pypdf import PdfReader
 
-from app.ingest.utils import getattr_or_default
+from utils import getattr_or_default
 
 
 class VortexPdfParser:
@@ -49,24 +49,28 @@ class VortexPdfParser:
             logger.info(f"{getattr(metadata, 'title', 'no title')}")
             default_date = date(1900, 1, 1)
             return {
-                "title": getattr_or_default(metadata, 'title', '').strip(),
-                "author": getattr_or_default(metadata, 'author', '').strip(),
-                "creation_date": getattr_or_default(metadata,
-                                                    'creation_date',
-                                                    default_date).strftime('%Y-%m-%d'),
+                "title": getattr_or_default(metadata, "title", "").strip(),
+                "author": getattr_or_default(metadata, "author", "").strip(),
+                "creation_date": getattr_or_default(
+                    metadata, "creation_date", default_date
+                ).strftime("%Y-%m-%d"),
             }
 
     def extract_pages_from_pdf(self) -> List[Tuple[int, str]]:
         """Extract and return the text of each page from the PDF."""
         logger.info("Extracting pages")
         with pdfplumber.open(self.pdf_file_path) as pdf:
-            return [(i + 1, p.extract_text())
-                    for i, p in enumerate(pdf.pages) if p.extract_text().strip()]
+            return [
+                (i + 1, p.extract_text())
+                for i, p in enumerate(pdf.pages)
+                if p.extract_text().strip()
+            ]
 
-    def clean_text(self,
-                   pages: List[Tuple[int, str]],
-                   cleaning_functions: List[Callable[[str], str]]
-                   ) -> List[Tuple[int, str]]:
+    def clean_text(
+        self,
+        pages: List[Tuple[int, str]],
+        cleaning_functions: List[Callable[[str], str]],
+    ) -> List[Tuple[int, str]]:
         """Apply the cleaning functions to the text of each page."""
         logger.info("Cleaning text of each page")
         cleaned_pages = []
@@ -88,8 +92,12 @@ class VortexPdfParser:
         """Reduce multiple newline characters in the text to a single newline."""
         return re.sub(r"\n{2,}", "\n", text)
 
-    def text_to_docs(self, text: List[Tuple[int, str]],
-                     metadata_parsed: Dict[str, str], metadata: Metadata) -> List[docstore.Document]:
+    def text_to_docs(
+        self,
+        text: List[Tuple[int, str]],
+        metadata_parsed: Dict[str, str],
+        metadata: Metadata,
+    ) -> List[docstore.Document]:
         """Split the text into chunks and return them as Documents."""
         doc_chunks: List[docstore.Document] = []
 
@@ -109,7 +117,7 @@ class VortexPdfParser:
                         "chunk": i,
                         "source": f"p{page_num}-{i}",
                         **asdict(metadata),
-                        **metadata_parsed
+                        **metadata_parsed,
                     },
                 )
                 doc_chunks.append(doc)

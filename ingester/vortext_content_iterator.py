@@ -1,7 +1,7 @@
 import os
 
 
-class VortexContentIterator():
+class VortexContentIterator:
     def __init__(self, content_path):
         self.content_path = content_path
 

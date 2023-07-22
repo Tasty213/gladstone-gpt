@@ -1,12 +1,12 @@
 from dotenv import load_dotenv
 
-from ingest.vortex_ingester import VortexIngester
+from vortex_ingester import VortexIngester
 
 load_dotenv()
 
 
 def main():
-    ingester = VortexIngester("./docs/")
+    ingester = VortexIngester("../docs/")
     ingester.ingest()
 
 

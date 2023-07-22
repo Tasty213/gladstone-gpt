@@ -1,0 +1,16 @@
+openapi
+langchain
+python-dotenv
+openai
+tiktoken 
+chromadb
+pdfplumber 
+loguru 
+pypdf 
+streamlit
+streamlit-chat
+streamlit-extras 
+pillow 
+mypy 
+bandit 
+pytest 

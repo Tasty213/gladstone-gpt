@@ -40,8 +40,6 @@ class NewsSpider(scrapy.Spider):
         return paragraphs, heading
 
     def get_date(self, response: HtmlResponse):
-        date_posted = response.xpath(
-            "//div[@class='type-body-a ml-8 first:ml-0 sm:ml-8 sm:first:ml-0']"
-        ).get()
-
-        return dateparser.parse(date_posted) if isinstance(date_posted, str) else ""
+        return response.xpath(
+            "//div[@class='type-body-a ml-8 first:ml-0 sm:ml-8 sm:first:ml-0']/text()"
+        ).get("")

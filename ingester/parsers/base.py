@@ -36,15 +36,18 @@ class BaseParser:
             cleaned_pages.append(text)
         return cleaned_pages
 
-    def merge_hyphenated_words(self, text: str) -> str:
+    @staticmethod
+    def merge_hyphenated_words(text: str) -> str:
         """Merge words in the text that have been split with a hyphen."""
         return re.sub(r"(\w)-\n(\w)", r"\1\2", text)
 
-    def fix_newlines(self, text: str) -> str:
+    @staticmethod
+    def fix_newlines(text: str) -> str:
         """Replace single newline characters in the text with spaces."""
         return re.sub(r"(?<!\n)\n(?!\n)", " ", text)
 
-    def remove_multiple_newlines(self, text: str) -> str:
+    @staticmethod
+    def remove_multiple_newlines(text: str) -> str:
         """Reduce multiple newline characters in the text to a single newline."""
         return re.sub(r"\n{2,}", "\n", text)
 

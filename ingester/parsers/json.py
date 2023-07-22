@@ -20,15 +20,8 @@ class JsonParser(BaseParser):
         metadata = data.get("metadata")
         match metadata.get("type"):
             case "pdf":
-                self.vortex_pdf_parser.set_pdf_file_path(metadata.get("path"))
-                return self.vortex_pdf_parser.clean_text_to_docs(
-                    Metadata(
-                        metadata.get("link"),
-                        metadata.get("name"),
-                        metadata.get("author"),
-                        metadata.get("date"),
-                    )
-                )
+                file_path = metadata.get("path")
+                return self.vortex_pdf_parser.text_to_docs(file_path, metadata)
             case "json":
                 return self.load_pure_json(data, metadata)
 

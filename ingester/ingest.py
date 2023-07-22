@@ -6,7 +6,7 @@ load_dotenv()
 
 
 def main():
-    ingester = VortexIngester("../docs/")
+    ingester = VortexIngester("./docs/")
     ingester.ingest()
 
 

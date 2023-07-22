@@ -1,11 +1,16 @@
 from dotenv import load_dotenv
+import langchain
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.schema import AIMessage, HumanMessage, Document
 from langchain.vectorstores.chroma import Chroma
 from langchain import PromptTemplate
-from langchain.prompts import SystemMessagePromptTemplate, HumanMessagePromptTemplate, ChatPromptTemplate
+from langchain.prompts import (
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+    ChatPromptTemplate,
+)
 from settings import COLLECTION_NAME, PERSIST_DIRECTORY
 
 
@@ -24,11 +29,11 @@ Context: {context}
 """
         general_user_template = "Question:```{question}```"
         messages = [
-                    SystemMessagePromptTemplate.from_template(general_system_template),
-                    HumanMessagePromptTemplate.from_template(general_user_template)
+            SystemMessagePromptTemplate.from_template(general_system_template),
+            HumanMessagePromptTemplate.from_template(general_user_template),
         ]
-        qa_prompt = ChatPromptTemplate.from_messages( messages )
-        
+        qa_prompt = ChatPromptTemplate.from_messages(messages)
+
         model = ChatOpenAI(
             client=None,
             model="gpt-3.5-turbo",
@@ -39,14 +44,14 @@ Context: {context}
         vector_store = Chroma(
             collection_name=COLLECTION_NAME,
             embedding_function=embedding,
-            persist_directory=PERSIST_DIRECTORY
+            persist_directory=PERSIST_DIRECTORY,
         )
 
         return ConversationalRetrievalChain.from_llm(
             model,
             retriever=vector_store.as_retriever(),
             return_source_documents=True,
-            combine_docs_chain_kwargs={'prompt': qa_prompt}
+            combine_docs_chain_kwargs={"prompt": qa_prompt},
         )
 
     def ask_question(self, question: str) -> tuple[str, list[Document]]:

@@ -13,6 +13,14 @@
             "justMyCode": true
         },
         {
+            "name": "Python: Run ingester",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/ingester/ingest.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Python: Launch Scrapy Spider",
             "type": "python",
             "request": "launch",

@@ -1,0 +1,3 @@
+scrapy
+justext
+dateparser

@@ -21,7 +21,8 @@
                 "runspider",
                 "${file}"
             ],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "cwd": "${fileDirname}"
         }
     ]
 }

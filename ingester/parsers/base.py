@@ -1,7 +1,6 @@
 from abc import abstractmethod
 import re
 from typing import Callable, Dict, List
-from metadata import Metadata
 import langchain.docstore.document as docstore
 import langchain.text_splitter as splitter
 from loguru import logger
@@ -11,7 +10,7 @@ class BaseParser:
     """A parser for extracting and cleaning text from PDF documents."""
 
     @abstractmethod
-    def text_to_docs(self, metadata: Metadata) -> List[docstore.Document]:
+    def text_to_docs(self, metadata: Dict[str, str]) -> List[docstore.Document]:
         pass
 
     def clean_text(

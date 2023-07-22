@@ -2,7 +2,6 @@ import json
 from typing import List
 from parsers.base import BaseParser
 from parsers.pdf import PdfParser
-from metadata import Metadata
 import langchain.docstore.document as docstore
 
 

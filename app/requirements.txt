@@ -14,4 +14,4 @@ pillow
 mypy 
 bandit 
 pytest 
-boto
+boto3

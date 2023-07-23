@@ -7,7 +7,7 @@ from parsers.json import JsonParser
 from vortext_content_iterator import VortexContentIterator
 
 COLLECTION_NAME = "neonshield-2023-05"
-PERSIST_DIRECTORY = "./data/chroma"
+PERSIST_DIRECTORY = "./temp_data/chroma"
 
 
 class VortexIngester:

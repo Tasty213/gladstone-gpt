@@ -21,6 +21,15 @@
             "justMyCode": true
         },
         {
+            "name": "Python: Run local query",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/app/query.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/app",
+            "justMyCode": true
+        },
+        {
             "name": "Python: Launch Scrapy Spider",
             "type": "python",
             "request": "launch",

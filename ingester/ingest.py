@@ -4,13 +4,14 @@ from dotenv import load_dotenv
 from pathlib import Path
 from vortex_ingester import PERSIST_DIRECTORY
 from mypy_boto3_s3.service_resource import Bucket
+from vortex_ingester import VortexIngester
 
 load_dotenv()
 
 
 def main():
-    # ingester = VortexIngester("./docs/")
-    # ingester.ingest()
+    ingester = VortexIngester("./docs/")
+    ingester.ingest()
 
     client = boto3.resource("s3")
     bucket = client.Bucket("gladstone-gpt-data")

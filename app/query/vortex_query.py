@@ -17,15 +17,14 @@ import boto3
 class VortexQuery:
     def __init__(self):
         load_dotenv()
+        self.download_data()
         self.chain = self.make_chain()
         self.chat_history = []
-        self.download_data()
 
     def download_data(
         self,
         bucket_name="gladstone-gpt-data",
-        s3_folder="./chroma",
-        local_dir="./",
+        local_dir=PERSIST_DIRECTORY,
     ):
         """
         Download the contents of a folder directory
@@ -36,12 +35,8 @@ class VortexQuery:
         """
         s3 = boto3.resource("s3")
         bucket = s3.Bucket(bucket_name)
-        for obj in bucket.objects.filter(Prefix=s3_folder):
-            target = (
-                obj.key
-                if local_dir is None
-                else os.path.join(local_dir, os.path.relpath(obj.key, s3_folder))
-            )
+        for obj in bucket.objects.filter():
+            target = obj.key if local_dir is None else os.path.join(local_dir, obj.key)
             if not os.path.exists(os.path.dirname(target)):
                 os.makedirs(os.path.dirname(target))
             if obj.key[-1] == "/":

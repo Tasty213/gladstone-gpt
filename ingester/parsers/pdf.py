@@ -1,4 +1,3 @@
-from dataclasses import asdict
 from pathlib import Path
 from datetime import date
 from typing import Dict, List, Tuple
@@ -21,7 +20,7 @@ class PdfParser(BaseParser):
         cleaned_text_pdf = self.clean_text(raw_pages)
 
         combined_metadata = {
-            **asdict(metadata),
+            **metadata,
             **metadata_parsed,
         }
 

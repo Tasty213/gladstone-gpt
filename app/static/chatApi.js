@@ -21,7 +21,11 @@ function appendAnswer(answer, sources) {
   uniqueSources.forEach(source => {
     var sourceElement = document.createElement('a')
     sourceElement.href = source.link
-    sourceElement.innerText = `${source.name}\n`
+    if (source.page_number){
+        sourceElement.innerText = `${source.name} - page ${source.page_number}\n`
+    } else {
+        sourceElement.innerText = `${source.name}\n`
+    }
     messageDiv.appendChild(sourceElement)
   });
 

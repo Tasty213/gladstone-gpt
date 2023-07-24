@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 
-from .query.vortex_query import VortexQuery
+from query.vortex_query import VortexQuery
 
 app = Flask(__name__)
 query = VortexQuery()

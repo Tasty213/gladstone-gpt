@@ -2,21 +2,24 @@ import os
 import boto3
 from dotenv import load_dotenv
 from pathlib import Path
+
 from vortex_ingester import PERSIST_DIRECTORY
 from mypy_boto3_s3.service_resource import Bucket
 from vortex_ingester import VortexIngester
 
 load_dotenv()
+DRY_RUN = True
 
 
 def main():
     ingester = VortexIngester("./docs/")
     ingester.ingest()
 
-    client = boto3.resource("s3")
-    bucket = client.Bucket("gladstone-gpt-data")
-    delete_folder(bucket)
-    upload_folder(Path(PERSIST_DIRECTORY), bucket)
+    if not DRY_RUN:
+        client = boto3.resource("s3")
+        bucket = client.Bucket("gladstone-gpt-data")
+        delete_folder(bucket)
+        upload_folder(Path(PERSIST_DIRECTORY), bucket)
 
 
 def delete_folder(bucket: Bucket):

@@ -59,10 +59,10 @@ class BaseParser:
         doc_chunks: List[docstore.Document] = []
 
         for page_num, page in enumerate(text):
-            text_splitter = splitter.RecursiveCharacterTextSplitter(
-                chunk_size=1000,
-                separators=["\n\n", "\n", ".", "!", "?", ",", " ", ""],
-                chunk_overlap=200,
+            text_splitter = splitter.TokenTextSplitter(
+                chunk_size=750,
+                model_name="cl100k_base",
+                chunk_overlap=25,
             )
             chunks = text_splitter.split_text(page)
             for i, chunk in enumerate(chunks):

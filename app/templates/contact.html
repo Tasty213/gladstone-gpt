@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Contact - Gladstone GPT</title>
+    <style>
+        /* ... (previous CSS styles) ... */
+        #contact-container {
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        #captcha-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #captcha-image {
+            display: inline-block;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f2f2f2;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        #captcha-input {
+            margin-top: 10px;
+            width: 200px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #submit-button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #submit-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="contact-container">
+        <h2>Contact Us</h2>
+        <p>
+            Please use the form below to send us your message.
+        </p>
+        <form method="post">
+            <div>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div>
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" rows="4" required></textarea>
+            </div>
+            <div id="captcha-container">
+                <div id="captcha-image">{{ captcha_word }}</div>
+                <input type="text" id="captcha-input" name="captcha" placeholder="Enter the word above" required>
+            </div>
+            <div>
+                <button id="submit-button" type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        /* ... (previous JavaScript code) ... */
+    </script>
+</body>
+
+</html>

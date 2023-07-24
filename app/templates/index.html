@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chatbot Interface</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #chat-container {
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .message {
+            background-color: #f2f2f2;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        .user {
+            text-align: right;
+            background-color: #e2f0fd;
+        }
+
+        #user-input {
+            margin-top: 20px;
+        }
+
+        #user-input-box {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #send-button {
+            padding: 10px 15px;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #send-button:hover {
+            background-color: #0056b3;
+        }
+
+        #header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #logo {
+            max-width: 100px;
+            display: block;
+            margin: 0 auto;
+            margin-bottom: 10px;
+        }
+
+        #disclaimer-container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #disclaimer {
+            font-style: italic;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header">
+        <img src="/static/logo.png" alt="Gladstone GPT Logo" id="logo">
+        <h1>Gladstone GPT</h1>
+    </div>
+
+    <div id="disclaimer-container">
+
+        <div id="disclaimer">
+            <p>
+                This is an AI Chatbot with access to the Liberal Democracy 2019 manifesto and articles from the party
+                website. You can ask the chatbot any question, and it will try to find an answer within the provided
+                documentation. It can't generate new policy and can't argue in favor of policy; it can only state in a
+                concise manner.
+            </p>
+            <p>
+                If the AI produces any content that is incorrect, offensive, or harmful, please <a
+                    href="/contact.html">contact me</a>.
+            </p>
+            <p>
+                Find me on Github: <a href="https://github.com/Tasty213" target="_blank">https://github.com/Tasty213</a>
+            </p>
+        </div>
+    </div>
+
+    <div id="chat-container">
+        <div id="chat-log">
+            <!-- Chat messages will appear here -->
+        </div>
+        <div id="user-input">
+            <input type="text" id="user-input-box" placeholder="Type your message here">
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chatLog = document.getElementById("chat-log");
+        const userInputBox = document.getElementById("user-input-box");
+        const sendButton = document.getElementById("send-button");
+
+        function appendMessage(message, sender) {
+            const messageDiv = document.createElement("div");
+            messageDiv.className = "message " + sender;
+            messageDiv.innerText = message;
+            chatLog.appendChild(messageDiv);
+        }
+
+        function sendMessage() {
+            const userMessage = userInputBox.value;
+            appendMessage("You: " + userMessage, "user");
+
+            // Send the user message to the server
+            fetch("/get_response", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: "userMessage"
+            })
+                .then(response => response.json())
+                .then(data => {
+                    appendMessage(data.response, "GladstoneGPT");
+                })
+                .catch(error => console.error("Error:", error));
+
+            // Clear the input box after sending
+            userInputBox.value = "";
+        }
+
+        sendButton.addEventListener("click", sendMessage);
+        userInputBox.addEventListener("keypress", function (event) {
+            if (event.keyCode === 13) {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+
+</html>

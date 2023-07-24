@@ -15,3 +15,5 @@ mypy
 bandit 
 pytest 
 boto3
+flask
+gunicorn

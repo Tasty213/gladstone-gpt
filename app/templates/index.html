@@ -116,49 +116,9 @@
             <input type="text" id="user-input-box" placeholder="Type your message here">
             <button id="send-button">Send</button>
         </div>
+        <script src="/static/chatApi.js" type="text/javascript"></script>
     </div>
 
-    <script>
-        const chatLog = document.getElementById("chat-log");
-        const userInputBox = document.getElementById("user-input-box");
-        const sendButton = document.getElementById("send-button");
-
-        function appendMessage(message, sender) {
-            const messageDiv = document.createElement("div");
-            messageDiv.className = "message " + sender;
-            messageDiv.innerText = message;
-            chatLog.appendChild(messageDiv);
-        }
-
-        function sendMessage() {
-            const userMessage = userInputBox.value;
-            appendMessage("You: " + userMessage, "user");
-
-            // Send the user message to the server
-            fetch("/get_response", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: "userMessage"
-            })
-                .then(response => response.json())
-                .then(data => {
-                    appendMessage(data.response, "GladstoneGPT");
-                })
-                .catch(error => console.error("Error:", error));
-
-            // Clear the input box after sending
-            userInputBox.value = "";
-        }
-
-        sendButton.addEventListener("click", sendMessage);
-        userInputBox.addEventListener("keypress", function (event) {
-            if (event.keyCode === 13) {
-                sendMessage();
-            }
-        });
-    </script>
 </body>
 
 </html>

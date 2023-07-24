@@ -1,3 +1,4 @@
+from pathlib import Path
 from dotenv import load_dotenv
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
@@ -9,7 +10,7 @@ from langchain.prompts import (
     HumanMessagePromptTemplate,
     ChatPromptTemplate,
 )
-from settings import COLLECTION_NAME, PERSIST_DIRECTORY
+from ..settings import COLLECTION_NAME, PERSIST_DIRECTORY
 import os
 import boto3
 
@@ -17,7 +18,10 @@ import boto3
 class VortexQuery:
     def __init__(self):
         load_dotenv()
-        self.download_data()
+
+        if not Path(PERSIST_DIRECTORY).exists():
+            self.download_data()
+
         self.chain = self.make_chain()
         self.chat_history = []
 

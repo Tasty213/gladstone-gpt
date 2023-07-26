@@ -27,7 +27,6 @@ class BlogPipeline:
         Path(self.output_folder).mkdir(parents=True, exist_ok=True)
 
     def process_item(self, item: BlogItem, spider):
-        print(item)
         item_name = item.get("metadata").get("name")
         output_file_path = Path(
             f"{self.output_folder}/{self.get_valid_filename(item_name)}.json"

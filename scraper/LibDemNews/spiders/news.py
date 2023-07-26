@@ -1,3 +1,5 @@
+from numpy import extract
+import regex
 import scrapy
 from scrapy.linkextractors import LinkExtractor
 from scrapy.http import request
@@ -9,9 +11,14 @@ from LibDemNews.items import BlogItem, MetadataItem
 class NewsSpider(scrapy.Spider):
     name = "news"
     allowed_domains = ["libdems.org.uk"]
-    start_urls = ["https://www.libdems.org.uk/news"]
-    allow_whitelist = "libdems.org.uk/news/.*"
-    extract_whitelist = r"https://www\.libdems\.org\.uk/news/(adlib-)?articles?/.*"
+    start_urls = [
+        "https://www.libdems.org.uk/news",
+        "https://www.libdems.org.uk/press/",
+    ]
+    allow_whitelist = "libdems.org.uk/(news|press)/.*"
+    extract_whitelist = (
+        r"https://www\.libdems\.org\.uk/(news|press)/((adlib-)?articles?|release)/.*"
+    )
 
     def __init__(self):
         self.html_path = "./out/html/"
@@ -23,15 +30,16 @@ class NewsSpider(scrapy.Spider):
 
         paragraphs, heading = self.get_paragraphs_and_headings(response)
 
-        yield BlogItem(
-            content="\n".join(paragraphs),
-            metadata=MetadataItem(
-                date=self.get_date(response),
-                link=response.url,
-                name=heading,
-                type="json",
-            ),
-        )
+        if regex.match(self.extract_whitelist, response.url):
+            yield BlogItem(
+                content="\n".join(paragraphs),
+                metadata=MetadataItem(
+                    date=self.get_date(response),
+                    link=response.url,
+                    name=heading,
+                    type="json",
+                ),
+            )
 
     def get_paragraphs_and_headings(self, response: HtmlResponse):
         all_content = justext.justext(response.text, justext.get_stoplist("English"))

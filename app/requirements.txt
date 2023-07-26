@@ -2,3 +2,4 @@ langchain
 gunicorn
 flask
 boto3
+openai

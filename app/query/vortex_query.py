@@ -1,5 +1,4 @@
 from pathlib import Path
-from dotenv import load_dotenv
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
@@ -17,8 +16,6 @@ import boto3
 
 class VortexQuery:
     def __init__(self):
-        load_dotenv()
-
         if not Path(PERSIST_DIRECTORY).exists():
             self.download_data()
 

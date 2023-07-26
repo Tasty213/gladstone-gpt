@@ -1,13 +1,10 @@
 import os
 import boto3
-from dotenv import load_dotenv
 from pathlib import Path
-
 from vortex_ingester import PERSIST_DIRECTORY
 from mypy_boto3_s3.service_resource import Bucket
 from vortex_ingester import VortexIngester
 
-load_dotenv()
 DRY_RUN = True
 
 

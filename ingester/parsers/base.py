@@ -3,7 +3,7 @@ import re
 from typing import Callable, Dict, List
 import langchain.docstore.document as docstore
 import langchain.text_splitter as splitter
-from loguru import logger
+import logging as logger
 
 
 class BaseParser:
@@ -27,7 +27,7 @@ class BaseParser:
                 self.remove_multiple_newlines,
             ]
 
-        logger.info("Cleaning text of each page")
+        logger.debug("Cleaning text of each page")
         cleaned_pages = []
         for page_num, text in enumerate(pages):
             for cleaning_function in cleaning_functions:
@@ -61,7 +61,7 @@ class BaseParser:
         for page_num, page in enumerate(text):
             text_splitter = splitter.TokenTextSplitter(
                 chunk_size=750,
-                model_name="cl100k_base",
+                model_name="gpt-3.5-turbo",
                 chunk_overlap=25,
             )
             chunks = text_splitter.split_text(page)

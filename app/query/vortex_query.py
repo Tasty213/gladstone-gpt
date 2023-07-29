@@ -73,7 +73,10 @@ Context: {context}
 
         return ConversationalRetrievalChain.from_llm(
             model,
-            retriever=vector_store.as_retriever(),
+            retriever=vector_store.as_retriever(
+                search_type="mmr",
+                search_kwargs={"k": 4, "fetch_k": 10, "lambda_mult": 0.2},
+            ),
             return_source_documents=True,
             combine_docs_chain_kwargs={"prompt": qa_prompt},
         )

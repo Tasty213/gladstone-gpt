@@ -34,10 +34,14 @@ function appendAnswer(answer, sources) {
   });
 
   chatLog.appendChild(messageDiv);
+  sendButton.disabled = false;
+  sendButton.className = "enabled";
 }
 
 function sendMessage(message) {
   const userMessage = userInputBox.value;
+  sendButton.disabled = true;
+  sendButton.className = "disabled";
   appendQuestion(userMessage);
 
   // Send the user message to the server

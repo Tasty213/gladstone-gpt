@@ -39,13 +39,9 @@ class PdfParser(BaseParser):
             reader = PdfReader(pdf_file)
             metadata = reader.metadata
             logger.debug(f"{getattr(metadata, 'title', 'no title')}")
-            default_date = date(1900, 1, 1)
             return {
                 "title": getattr_or_default(metadata, "title", "").strip(),
                 "author": getattr_or_default(metadata, "author", "").strip(),
-                "creation_date": getattr_or_default(
-                    metadata, "creation_date", default_date
-                ).strftime("%Y-%m-%d"),
             }
 
     def extract_pages_from_pdf(self, pdf_file_path) -> list[str]:

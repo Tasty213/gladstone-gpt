@@ -66,8 +66,9 @@ class BaseParser:
             )
             chunks = text_splitter.split_text(page)
             for i, chunk in enumerate(chunks):
+                chunk_with_date = f"{metadata_parsed.get('date')}\n\n{chunk}"
                 doc = docstore.Document(
-                    page_content=chunk,
+                    page_content=chunk_with_date,
                     metadata={
                         "page_number": page_num,
                         "chunk": i,

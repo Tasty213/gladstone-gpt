@@ -9,7 +9,7 @@ from langchain.prompts import (
     HumanMessagePromptTemplate,
     ChatPromptTemplate,
 )
-from app.backend.settings import COLLECTION_NAME, PERSIST_DIRECTORY
+from backend.settings import COLLECTION_NAME, PERSIST_DIRECTORY
 import os
 import boto3
 

@@ -3,133 +3,37 @@
 
 <head>
     <title>GladstoneGPT</title>
-    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-
-        h1 {
-            text-align: center;
-        }
-
-        #chat-container {
-            max-width: 600px;
-            margin: 0 auto;
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 5px;
-        }
-
-        .message {
-            background-color: #f2f2f2;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 5px;
-        }
-
-        .user {
-            text-align: right;
-            background-color: #e2f0fd;
-        }
-
-        #user-input {
-            margin-top: 20px;
-        }
-
-        #user-input-box {
-            width: 80%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        #send-button.enabled {
-            padding: 10px 15px;
-            border: none;
-            background-color: #007BFF;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        #send-button.enabled:hover {
-            background-color: #0056b3;
-        }
-
-        #send-button.disabled {
-            padding: 10px 15px;
-            border: none;
-            background-color: #666666;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-
-        #header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        #logo {
-            max-width: 100px;
-            display: block;
-            margin: 0 auto;
-            margin-bottom: 10px;
-        }
-
-        #disclaimer-container {
-            max-width: 600px;
-            margin: 0 auto;
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        #disclaimer {
-            font-style: italic;
-            color: #666;
-        }
-    </style>
+    <link rel="icon" type="image/x-icon" href="./images/favicon.ico">
+    <link rel="stylesheet" href="./styles/index.css">
 </head>
 
 <body>
-    <div id="header">
-        <img src="/images/logo.png" alt="Gladstone GPT Logo" id="logo">
+    <div id="header"><img src="./images/logo.png" alt="Gladstone GPT Logo" id="logo">
         <h1>Gladstone GPT</h1>
     </div>
-
     <div id="disclaimer-container">
-
         <div id="disclaimer">
-            <p>
-                This is an AI Chatbot with access to the Liberal Democracy 2019 manifesto and articles from the party
-                website. You can ask the chatbot any question, and it will try to find an answer within the provided
-                documentation. It can't generate new policy and can't argue in favor of policy; it can only state in a
-                concise manner.
-            </p>
-            <p>
-                If the AI produces any content that is incorrect, offensive, or harmful, please <a
-                    href="/contact.html">contact me</a>.
-            </p>
-            <p>
-                Find me on Github: <a href="https://github.com/Tasty213" target="_blank">https://github.com/Tasty213</a>
+            <p>This is an AI Chatbot with access to the Liberal Democracy 2019 manifesto and articles from the party
+                website. You can ask the chatbot any question,
+                and it will try to find an answer within the provided documentation. It can't generate new policy and
+                can' t argue in favor of policy;
+                it can only state in a concise manner. </p>
+            <p>If the AI produces any content that is incorrect,
+                offensive,
+                or harmful,
+                please <a href="./contact.html">contact me</a>. </p>
+            <p>Find me on Github: <a href="https://github.com/Tasty213" target="_blank">https: //github.com/Tasty213</a>
             </p>
         </div>
     </div>
-
     <div id="chat-container">
         <div id="chat-log">
-            <!-- Chat messages will appear here -->
+            <!-- Chat messages will appear here-->
         </div>
-        <div id="user-input">
-            <input type="text" id="user-input-box" placeholder="Type your message here">
-            <button id="send-button" class="enabled">Send</button>
-        </div>
+        <div id="user-input"><input type="text" id="user-input-box" placeholder="Type your message here"><button
+                id="send-button" class="enabled">Send</button></div>
         <script src="app.js" type="text/javascript"></script>
     </div>
-
 </body>
 
 </html>

@@ -1,17 +1,13 @@
 {
-  "name": "flask-react",
+  "name": "gladstone-gpt",
   "version": "1.0.0",
-  "main": "index.js",
-  "author": "Spotlight PA",
+  "author": "George Sykes",
   "license": "MIT",
   "scripts": {
-    "clean": "find dist -mindepth 1 -delete || mkdir dist",
-    "build": "parcel build frontend/index.html --no-content-hash --experimental-scope-hoisting",
-    "flask": "../.venv/Scripts/flask.exe run --no-debugger",
-    "flask:dev": "npm run start & export BUILD_DIR=.tmp && npm run flask",
-    "flask:prod": "npm run clean && npm run build && npm run flask",
-    "deploy": "npm run clean && npm run build && git add ./dist && git commit -m 'Build frontend'; git push heroku master",
-    "start": "parcel client/index.html -d .tmp"
+    "clean": "rimraf dist",
+    "build": "parcel build ./frontend/index.html",
+    "build:dev": "parcel watch ./frontend/index.html",
+    "deploy": "npm run clean && npm run build && git add ./dist && git commit -m 'Build frontend'; git push heroku master"
   },
   "dependencies": {
     "@emotion/core": "^11.0.0",
@@ -40,6 +36,8 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "parcel": "^2.9.3",
     "prettier": "3.0.0",
+    "process": "^0.11.10",
+    "rimraf": "^5.0.1",
     "sass": "^1.64.1"
   }
 }

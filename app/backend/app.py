@@ -1,8 +1,9 @@
+import os
 from flask import Flask, request, jsonify
+from backend.query.vortex_query import VortexQuery
 
-from query.vortex_query import VortexQuery
-
-app = Flask(__name__, static_folder="../dist", static_url_path="/")
+build_dir = os.getenv("BUILD_DIR", "dist")
+app = Flask(__name__, static_folder=f"../{build_dir}", static_url_path="/")
 query = VortexQuery()
 
 

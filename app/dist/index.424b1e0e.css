@@ -1,7 +1,6 @@
-
 body {
-  font-family: Arial, sans-serif;
   margin: 20px;
+  font-family: Arial, sans-serif;
 }
 
 h1 {
@@ -9,18 +8,18 @@ h1 {
 }
 
 #chat-container {
+  border: 1px solid #ccc;
+  border-radius: 5px;
   max-width: 600px;
   margin: 0 auto;
-  border: 1px solid #ccc;
   padding: 10px;
-  border-radius: 5px;
 }
 
 .message {
   background-color: #f2f2f2;
-  padding: 10px;
-  margin: 5px 0;
   border-radius: 5px;
+  margin: 5px 0;
+  padding: 10px;
 }
 
 .user {
@@ -33,19 +32,19 @@ h1 {
 }
 
 #user-input-box {
-  width: 80%;
-  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  width: 80%;
+  padding: 10px;
 }
 
 #send-button.enabled {
-  padding: 10px 15px;
-  border: none;
-  background-color: #007BFF;
-  color: white;
-  border-radius: 5px;
+  color: #fff;
   cursor: pointer;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
 }
 
 #send-button.enabled:hover {
@@ -53,13 +52,12 @@ h1 {
 }
 
 #send-button.disabled {
-  padding: 10px 15px;
-  border: none;
-  background-color:
-      #666666;
-  color: white;
-  border-radius: 5px;
+  color: #fff;
   cursor: pointer;
+  background-color: #666;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
 }
 
 #header {
@@ -69,19 +67,19 @@ h1 {
 
 #logo {
   max-width: 100px;
+  margin: 0 auto 10px;
   display: block;
-  margin: 0 auto;
-  margin-bottom: 10px;
 }
 
 #disclaimer-container {
-  max-width: 600px;
-  margin: 0 auto;
   text-align: center;
-  margin-top: 20px;
+  max-width: 600px;
+  margin: 20px auto 0;
 }
 
 #disclaimer {
-  font-style: italic;
   color: #666;
+  font-style: italic;
 }
+
+/*# sourceMappingURL=index.424b1e0e.css.map */

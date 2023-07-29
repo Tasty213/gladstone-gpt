@@ -61,7 +61,11 @@ Liz Truss became Prime Minister in September 2022, but resigned in October after
 Rishi Sunak became Prime Minister in October 2022, the first British Asian, Indian, person of color, and Hindu PM.
 Sunak dealt with cost-of-living crisis, labor disputes, and Brexit fallout.
 
-Prioritise newer items of context.
+Prioritise newer items.
+
+----
+{context}
+----
 """
         general_user_template = "Question:```{question}```"
         messages = [

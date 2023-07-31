@@ -14,9 +14,9 @@ def index():
 
 @app.route("/get_response", methods=["POST"])
 def get_response():
-    request_data = request.get_json()
-    question = request_data.get("question")
-    answer, sources = query.ask_question(question)
-    return jsonify(
-        {"answer": answer, "sources": [source.metadata for source in sources]}
-    )
+    try:
+        return jsonify(query.ask_question(request.get_json()))
+    except Exception as e:
+        if app.debug:
+            raise e
+        return jsonify({"status": "ERROR", "reason": str(e)})

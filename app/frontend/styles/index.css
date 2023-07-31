@@ -23,8 +23,13 @@ h1 {
   border-radius: 5px;
 }
 
-.user {
+.human {
   text-align: right;
+  background-color: #e2f0fd;
+}
+
+.ai {
+  text-align: left;
   background-color: #e2f0fd;
 }
 
@@ -85,3 +90,8 @@ h1 {
   font-style: italic;
   color: #666;
 }
+
+ul.sources {
+  list-style: none;
+  padding: 0;
+}  

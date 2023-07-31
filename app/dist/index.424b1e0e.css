@@ -22,8 +22,13 @@ h1 {
   padding: 10px;
 }
 
-.user {
+.human {
   text-align: right;
+  background-color: #e2f0fd;
+}
+
+.ai {
+  text-align: left;
   background-color: #e2f0fd;
 }
 
@@ -80,6 +85,11 @@ h1 {
 #disclaimer {
   color: #666;
   font-style: italic;
+}
+
+ul.sources {
+  padding: 0;
+  list-style: none;
 }
 
 /*# sourceMappingURL=index.424b1e0e.css.map */

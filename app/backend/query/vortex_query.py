@@ -1,14 +1,16 @@
 from pathlib import Path
+from typing import Dict, List
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.schema import AIMessage, HumanMessage, Document
+from langchain.schema import Document
 from langchain.vectorstores.chroma import Chroma
 from langchain.prompts import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
     ChatPromptTemplate,
 )
+from backend.query.message_factory import MessageFactory
 from backend.settings import COLLECTION_NAME, PERSIST_DIRECTORY
 import os
 import boto3
@@ -20,7 +22,6 @@ class VortexQuery:
             self.download_data()
 
         self.chain = self.make_chain()
-        self.chat_history = []
 
     def download_data(
         self,
@@ -97,12 +98,19 @@ Prioritise newer items.
             combine_docs_chain_kwargs={"prompt": qa_prompt},
         )
 
-    def ask_question(self, question: str) -> tuple[str, list[Document]]:
-        response = self.chain({"question": question, "chat_history": self.chat_history})
-
+    def ask_question(self, input: List[Dict]) -> tuple[str, list[Document]]:
+        chat_history = list(map(lambda x: MessageFactory.create_message(x), input[:-1]))
+        response = self.chain(
+            {
+                "question": input[-1].get("content"),
+                "chat_history": chat_history,
+            }
+        )
         answer = response.get("answer")
-        source = response.get("source_documents")
-        self.chat_history.append(HumanMessage(content=question))
-        self.chat_history.append(AIMessage(content=answer))
+        sources = response.get("source_documents")
 
-        return answer, source
+        return {
+            "status": "SUCCESS",
+            "answer": answer,
+            "sources": [source.metadata for source in sources],
+        }

@@ -21,16 +21,19 @@ h1 {
   padding: 10px;
   margin: 5px 0;
   border-radius: 5px;
+  width: 75%;
 }
 
 .human {
   text-align: right;
+  float: right;
   background-color: #e2f0fd;
 }
 
 .ai {
   text-align: left;
-  background-color: #e2f0fd;
+  float: left;
+  background-color: #f5e6ce;
 }
 
 #user-input {
@@ -44,13 +47,17 @@ h1 {
   border-radius: 5px;
 }
 
-#send-button.enabled {
+#send-button {
   padding: 10px 15px;
   border: none;
-  background-color: #007BFF;
   color: white;
   border-radius: 5px;
   cursor: pointer;
+  float: right;
+}
+
+#send-button.enabled {
+  background-color: #007BFF;
 }
 
 #send-button.enabled:hover {
@@ -58,13 +65,7 @@ h1 {
 }
 
 #send-button.disabled {
-  padding: 10px 15px;
-  border: none;
-  background-color:
-      #666666;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
+  background-color:#666666;
 }
 
 #header {

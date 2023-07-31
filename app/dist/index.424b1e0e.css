@@ -18,18 +18,21 @@ h1 {
 .message {
   background-color: #f2f2f2;
   border-radius: 5px;
+  width: 75%;
   margin: 5px 0;
   padding: 10px;
 }
 
 .human {
   text-align: right;
+  float: right;
   background-color: #e2f0fd;
 }
 
 .ai {
   text-align: left;
-  background-color: #e2f0fd;
+  float: left;
+  background-color: #f5e6ce;
 }
 
 #user-input {
@@ -43,13 +46,17 @@ h1 {
   padding: 10px;
 }
 
-#send-button.enabled {
+#send-button {
   color: #fff;
   cursor: pointer;
-  background-color: #007bff;
+  float: right;
   border: none;
   border-radius: 5px;
   padding: 10px 15px;
+}
+
+#send-button.enabled {
+  background-color: #007bff;
 }
 
 #send-button.enabled:hover {
@@ -57,12 +64,7 @@ h1 {
 }
 
 #send-button.disabled {
-  color: #fff;
-  cursor: pointer;
   background-color: #666;
-  border: none;
-  border-radius: 5px;
-  padding: 10px 15px;
 }
 
 #header {

@@ -17,6 +17,7 @@ jobs:
     - name: Use Node.js 20.5.x
       uses: actions/setup-node@v3
       with:
+        cache-dependency-path: ./app/package-lock.json
         node-version: 20.5.x
         cache: 'npm'
     

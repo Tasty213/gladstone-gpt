@@ -1,44 +1,32 @@
-name: Python CI
+name: Build and package
 
 on:
   push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+    branches: main
 
 jobs:
-  build-and-deploy:
+  build:
+
     runs-on: ubuntu-latest
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - name: Check out code
-      uses: actions/checkout@v3
-
-    - name: Set up Python
-      uses: actions/setup-python@v3
+    - uses: actions/checkout@v3
+      name: Checkout code
+    - name: Use Node.js 20.5.x
+      uses: actions/setup-node@v3
       with:
-        python-version: 3.11.3
-
-    - name: Install poetry
-      run: |
-        python -m pip install poetry==1.4.2
-
-    - name: Configure poetry
-      run: |
-        python -m poetry config virtualenvs.in-project true
-
-    - name: Cache the virtualenv
-      uses: actions/cache@v3
+        node-version: 20.5.x
+        cache: 'npm'
+    
+    - run: npm ci
+      working-directory: ./app
+    - run: npm run build --if-present
+      working-directory: ./app
+    - uses: gonuit/heroku-docker-deploy@v1.3.3
+      name: Build, Push and Release a Docker container to Heroku.
       with:
-        path: ./.venv
-        key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
-
-    - name: Install dependencies
-      run: |
-        python -m poetry install
-
-    - name: Run test
-      run: |
-        poetry run pytest
+        heroku_app_name: ${{ secrets.HEROKU_EMAIL }}
+        email: ${{ secrets.HEROKU_API_KEY }}
+        heroku_api_key: ${{ secrets.HEROKU_APP_NAME }}
+        dockerfile_directory: ./app

@@ -36,11 +36,11 @@ h1 {
   background-color: #f5e6ce;
 }
 
-#user-input {
+.user-input-form {
   margin-top: 20px;
 }
 
-#user-input-box {
+.user-input-box {
   width: 80%;
   padding: 10px;
   border: 1px solid #ccc;

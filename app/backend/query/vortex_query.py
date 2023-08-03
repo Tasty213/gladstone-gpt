@@ -1,5 +1,8 @@
+import datetime
 from pathlib import Path
+import time
 from typing import Dict, List
+import uuid
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
@@ -10,6 +13,7 @@ from langchain.prompts import (
     HumanMessagePromptTemplate,
     ChatPromptTemplate,
 )
+from backend.messageData import MessageData
 from backend.query.message_factory import MessageFactory
 from backend.settings import COLLECTION_NAME, PERSIST_DIRECTORY
 import os
@@ -98,19 +102,43 @@ Prioritise newer items.
             combine_docs_chain_kwargs={"prompt": qa_prompt},
         )
 
-    def ask_question(self, input: List[Dict]) -> tuple[str, list[Document]]:
+    def ask_question(
+        self, input: List[Dict], table: MessageData
+    ) -> tuple[str, list[Document]]:
         chat_history = list(map(lambda x: MessageFactory.create_message(x), input[:-1]))
+        question = input[-1]
+        table.add_message(
+            question.get("messageId"),
+            question.get("userId"),
+            question.get("content"),
+            question.get("source"),
+            question.get("time"),
+            question.get("previousMessageId"),
+        )
         response = self.chain(
             {
-                "question": input[-1].get("content"),
+                "question": question.get("content"),
                 "chat_history": chat_history,
             }
         )
         answer = response.get("answer")
         sources = response.get("source_documents")
+        source_metadata = [source.metadata for source in sources]
+        messageId = str(uuid.uuid4())
+
+        table.add_message(
+            messageId,
+            "AI",
+            answer,
+            source_metadata,
+            round(time.time() * 1000),
+            question.get("messageId"),
+        )
 
         return {
             "status": "SUCCESS",
             "answer": answer,
-            "sources": [source.metadata for source in sources],
+            "sources": source_metadata,
+            "previousMessageId": question.get("messageId"),
+            "messageId": messageId,
         }

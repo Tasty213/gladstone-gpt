@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import Message from "./message";
 
-function Chat() {
+function Chat({ userId }) {
   const [text, setText] = useState("");
   const [pastMessages, setMessages] = useState([]);
   const [inFlight, setInFlight] = useState(false);
 
   return (
-    <div id="chat-container">
+    <div>
       <div id="chat-log">
         {pastMessages.map((message) => (
           <Message
@@ -18,15 +18,23 @@ function Chat() {
         ))}
       </div>
       <form
-        id="user-input"
+        class="user-input-form"
         onSubmit={(e) =>
-          sendChatMessage(e, text, pastMessages, setMessages, setInFlight)
+          sendChatMessage(
+            e,
+            text,
+            pastMessages,
+            userId,
+            setMessages,
+            setInFlight,
+            setText
+          )
         }
         autocomplete="off"
       >
         <input
           type="text"
-          id="user-input-box"
+          class="user-input-box"
           value={text}
           placeholder="Type your message here"
           onChange={(e) => setText(e.target.value)}
@@ -39,13 +47,35 @@ function Chat() {
   );
 }
 
-function sendChatMessage(event, text, pastMessages, setMessages, setInFlight) {
+function sendChatMessage(
+  event,
+  text,
+  pastMessages,
+  userId,
+  setMessages,
+  setInFlight,
+  setText
+) {
   event.preventDefault();
 
   setInFlight(true);
+
+  var previousMessage = pastMessages.slice(-1);
+
   var messages = [
     ...pastMessages,
-    { type: "human", content: text, time: Date.now(), sources: [] },
+    {
+      type: "human",
+      content: text,
+      time: Date.now(),
+      sources: [],
+      userId: userId,
+      messageId: crypto.randomUUID(),
+      previousMessageId:
+        previousMessage[0] === undefined
+          ? "null"
+          : previousMessage[0].messageId,
+    },
   ];
   setMessages(messages);
 
@@ -62,6 +92,7 @@ function sendChatMessage(event, text, pastMessages, setMessages, setInFlight) {
       receiveChatMessage(data, messages, setMessages, setInFlight)
     )
     .catch((error) => console.error("Error:", error));
+  setText("");
 }
 
 function receiveChatMessage(data, pastMessages, setMessages, setInFlight) {
@@ -81,6 +112,8 @@ function receiveChatMessage(data, pastMessages, setMessages, setInFlight) {
       content: data.answer,
       time: Date.now(),
       sources: uniqueSources,
+      messageId: data.messageId,
+      previousMessageId: data.previousMessageId,
     },
   ];
   setMessages(messages);

@@ -9,11 +9,15 @@ build_dir = os.getenv("BUILD_DIR", "dist")
 app = Flask(__name__, static_folder=f"../{build_dir}", static_url_path="/")
 query = VortexQuery()
 
+
+database_region = os.getenv("DB_REGION", "eu-north-1")
+database_name_canvass = os.getenv("DB_NAME_CANVASS", "canvassData")
+database_name_message = os.getenv("DB_NAME_MESSAGE", "messages")
 canvassDataTable = CanvassData(
-    boto3.resource("dynamodb", region_name="eu-north-1").Table("canvassData")
+    boto3.resource("dynamodb", region_name=database_region).Table(database_name_canvass)
 )
 messageDataTable = MessageData(
-    boto3.resource("dynamodb", region_name="eu-north-1").Table("messages")
+    boto3.resource("dynamodb", region_name=database_region).Table(database_name_message)
 )
 
 

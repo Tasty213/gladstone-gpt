@@ -4,3 +4,4 @@ flask
 boto3
 openai
 chromadb
+tiktoken

@@ -3,8 +3,8 @@ import Chat from "./chat";
 import CanvassForm from "./canvassForm";
 
 const Main = () => {
-  [canvassComplete, setCanvassComplete] = useState(false);
-  [userId, setUserId] = useState("");
+  const [canvassComplete, setCanvassComplete] = useState(false);
+  const [userId, setUserId] = useState("");
 
   return (
     <div id="chat-container">

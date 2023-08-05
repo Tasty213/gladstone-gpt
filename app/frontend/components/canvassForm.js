@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 
 function CanvassForm({ setCompleted, setUserId }) {
-  [firstName, setFirstName] = useState("");
-  [lastName, setLastName] = useState("");
-  [postCode, setPostCode] = useState("");
-  [email, setEmail] = useState("");
-  [voterIntent, setVoterIntent] = useState("Liberal Democrat");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [postCode, setPostCode] = useState("");
+  const [email, setEmail] = useState("");
+  const [voterIntent, setVoterIntent] = useState("Liberal Democrat");
 
   return (
     <form

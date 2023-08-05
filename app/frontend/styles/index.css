@@ -45,6 +45,7 @@ h1 {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  margin: 10px;
 }
 
 #send-button {
@@ -53,7 +54,6 @@ h1 {
   color: white;
   border-radius: 5px;
   cursor: pointer;
-  float: right;
 }
 
 #send-button.enabled {

@@ -5,7 +5,7 @@ function CanvassForm({ setCompleted, setUserId }) {
   [lastName, setLastName] = useState("");
   [postCode, setPostCode] = useState("");
   [email, setEmail] = useState("");
-  [voterIntent, setVoterIntent] = useState("");
+  [voterIntent, setVoterIntent] = useState("Liberal Democrat");
 
   return (
     <form
@@ -18,7 +18,8 @@ function CanvassForm({ setCompleted, setUserId }) {
           firstName,
           lastName,
           postCode,
-          email
+          email,
+          voterIntent
         )
       }
     >
@@ -59,6 +60,7 @@ function CanvassForm({ setCompleted, setUserId }) {
         value={voterIntent}
         placeholder="Voter Intent"
         onChange={(e) => setVoterIntent(e.target.value)}
+        class="user-input-box"
       >
         <option>Liberal Democrat</option>
         <option>Conservative</option>
@@ -66,7 +68,9 @@ function CanvassForm({ setCompleted, setUserId }) {
         <option>Green</option>
         <option>Independent</option>
       </select>
-      <button id="submit-button">Submit</button>
+      <button id="send-button" class="enabled">
+        Submit
+      </button>
     </form>
   );
 }
@@ -78,7 +82,8 @@ function submitForm(
   firstName,
   lastName,
   postcode,
-  email
+  email,
+  voterIntent
 ) {
   event.preventDefault();
   userId = crypto.randomUUID();
@@ -90,6 +95,8 @@ function submitForm(
     lastName: lastName,
     postcode: postcode,
     email: email,
+    voterIntent: voterIntent,
+    time: Date.now(),
   };
 
   fetch("/submit_canvass", {

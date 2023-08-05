@@ -12,7 +12,9 @@ class CanvassData:
         self.table = table
         self.logger = logging.getLogger()
 
-    def add_canvass(self, userId, firstName, lastName, postcode, email):
+    def add_canvass(
+        self, userId, firstName, lastName, postcode, email, voterIntent, time
+    ):
         try:
             self.table.put_item(
                 Item={
@@ -21,6 +23,8 @@ class CanvassData:
                     "lastName": lastName,
                     "postcode": postcode,
                     "email": email,
+                    "voterIntent": voterIntent,
+                    "time": time,
                 }
             )
         except ClientError as err:

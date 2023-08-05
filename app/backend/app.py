@@ -42,6 +42,8 @@ def submit_canvass():
             data.get("lastName"),
             data.get("postcode"),
             data.get("email"),
+            data.get("voterIntent"),
+            data.get("time"),
         )
         return jsonify({"status": "SUCCESS"})
 

@@ -86,10 +86,10 @@ function submitForm(
   voterIntent
 ) {
   event.preventDefault();
-  userId = crypto.randomUUID();
+  const userId = crypto.randomUUID();
   setUserId(userId);
 
-  canvassData = {
+  const canvassData = {
     userId: userId,
     firstName: firstName,
     lastName: lastName,

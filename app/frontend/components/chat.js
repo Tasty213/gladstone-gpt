@@ -18,7 +18,7 @@ function Chat({ userId }) {
         ))}
       </div>
       <form
-        class="user-input-form"
+        className="user-input-form"
         onSubmit={(e) =>
           sendChatMessage(
             e,
@@ -30,16 +30,16 @@ function Chat({ userId }) {
             setText
           )
         }
-        autocomplete="off"
+        autoComplete="off"
       >
         <input
           type="text"
-          class="user-input-box"
+          className="user-input-box"
           value={text}
           placeholder="Type your message here"
           onChange={(e) => setText(e.target.value)}
         />
-        <button id="send-button" class={inFlight ? "disabled" : "enabled"}>
+        <button id="send-button" className={inFlight ? "disabled" : "enabled"}>
           Send
         </button>
       </form>
@@ -60,9 +60,9 @@ function sendChatMessage(
 
   setInFlight(true);
 
-  var previousMessage = pastMessages.slice(-1);
+  const previousMessage = pastMessages.slice(-1);
 
-  var messages = [
+  const messages = [
     ...pastMessages,
     {
       type: "human",
@@ -99,13 +99,13 @@ function receiveChatMessage(data, pastMessages, setMessages, setInFlight) {
   if (data.status != "SUCCESS") {
   }
 
-  let uniqueSources = {};
+  const uniqueSources = {};
   data.sources.forEach(
     (element) =>
       (uniqueSources[`${element.link}-page-${element.page_number}`] = element)
   );
 
-  var messages = [
+  const messages = [
     ...pastMessages,
     {
       type: "ai",

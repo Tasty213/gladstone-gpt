@@ -9,7 +9,7 @@ function CanvassForm({ setCompleted, setUserId }) {
 
   return (
     <form
-      class="user-input-form"
+      className="user-input-form"
       onSubmit={(e) =>
         submitForm(
           e,
@@ -26,7 +26,7 @@ function CanvassForm({ setCompleted, setUserId }) {
       <input
         type="text"
         id="first-name"
-        class="user-input-box"
+        className="user-input-box"
         value={firstName}
         placeholder="First name"
         onChange={(e) => setFirstName(e.target.value)}
@@ -34,7 +34,7 @@ function CanvassForm({ setCompleted, setUserId }) {
       <input
         type="text"
         id="last-name"
-        class="user-input-box"
+        className="user-input-box"
         value={lastName}
         placeholder="Last name"
         onChange={(e) => setLastName(e.target.value)}
@@ -42,7 +42,7 @@ function CanvassForm({ setCompleted, setUserId }) {
       <input
         type="text"
         id="post-code"
-        class="user-input-box"
+        className="user-input-box"
         value={postCode}
         placeholder="Post Code"
         onChange={(e) => setPostCode(e.target.value)}
@@ -50,7 +50,7 @@ function CanvassForm({ setCompleted, setUserId }) {
       <input
         type="email"
         id="email"
-        class="user-input-box"
+        className="user-input-box"
         value={email}
         placeholder="Email"
         onChange={(e) => setEmail(e.target.value)}
@@ -60,7 +60,7 @@ function CanvassForm({ setCompleted, setUserId }) {
         value={voterIntent}
         placeholder="Voter Intent"
         onChange={(e) => setVoterIntent(e.target.value)}
-        class="user-input-box"
+        className="user-input-box"
       >
         <option>Liberal Democrat</option>
         <option>Conservative</option>
@@ -68,7 +68,7 @@ function CanvassForm({ setCompleted, setUserId }) {
         <option>Green</option>
         <option>Independent</option>
       </select>
-      <button id="send-button" class="enabled">
+      <button id="send-button" className="enabled">
         Submit
       </button>
     </form>

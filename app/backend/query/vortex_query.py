@@ -15,7 +15,7 @@ from langchain.prompts import (
 )
 from backend.messageData import MessageData
 from backend.query.message_factory import MessageFactory
-from backend.settings import COLLECTION_NAME, PERSIST_DIRECTORY
+from backend.settings import COLLECTION_NAME, PERSIST_DIRECTORY, MODEL_NAME
 import os
 import boto3
 
@@ -81,7 +81,7 @@ Prioritise newer items.
 
         model = ChatOpenAI(
             client=None,
-            model="gpt-3.5-turbo",
+            model=MODEL_NAME,
             temperature=0.5,
         )
         embedding = OpenAIEmbeddings(client=None)

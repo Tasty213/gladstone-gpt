@@ -10,7 +10,7 @@ function Message({ type, content, sources }) {
             <Source
               name={source[1].name}
               link={source[1].link}
-              page={source[1].page}
+              page={source[1].page_number}
             />
           </li>
         ))}

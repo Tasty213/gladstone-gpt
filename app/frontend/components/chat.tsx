@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import Message from "./message";
+import { MessageApiResponse, MessageData, SourceSet } from "./types";
 
-function Chat({ userId }) {
+type ChatProps = {
+  userId: string;
+};
+
+function Chat({ userId }: ChatProps) {
   const [text, setText] = useState("");
-  const [pastMessages, setMessages] = useState([]);
+  const [pastMessages, setMessages] = useState<MessageData[]>([]);
   const [inFlight, setInFlight] = useState(false);
 
   return (
@@ -48,13 +53,13 @@ function Chat({ userId }) {
 }
 
 function sendChatMessage(
-  event,
-  text,
-  pastMessages,
-  userId,
-  setMessages,
-  setInFlight,
-  setText
+  event: React.FormEvent<HTMLFormElement>,
+  text: string,
+  pastMessages: MessageData[],
+  userId: string,
+  setMessages: React.Dispatch<React.SetStateAction<MessageData[]>>,
+  setInFlight: React.Dispatch<React.SetStateAction<boolean>>,
+  setText: React.Dispatch<React.SetStateAction<string>>
 ) {
   event.preventDefault();
 
@@ -68,9 +73,9 @@ function sendChatMessage(
       type: "human",
       content: text,
       time: Date.now(),
-      sources: [],
+      sources: {},
       userId: userId,
-      messageId: crypto.randomUUID(),
+      messageId: crypto.randomUUID().toString(),
       previousMessageId:
         previousMessage[0] === undefined
           ? "null"
@@ -95,14 +100,20 @@ function sendChatMessage(
   setText("");
 }
 
-function receiveChatMessage(data, pastMessages, setMessages, setInFlight) {
+function receiveChatMessage(
+  data: MessageApiResponse,
+  pastMessages: MessageData[],
+  setMessages: React.Dispatch<React.SetStateAction<MessageData[]>>,
+  setInFlight: React.Dispatch<React.SetStateAction<boolean>>
+) {
   if (data.status != "SUCCESS") {
   }
 
-  const uniqueSources = {};
+  const uniqueSources: SourceSet = {};
   data.sources.forEach(
     (element) =>
-      (uniqueSources[`${element.link}-page-${element.page_number}`] = element)
+      (uniqueSources[`${element.link}-page-${element.page_number.toString()}`] =
+        element)
   );
 
   const messages = [

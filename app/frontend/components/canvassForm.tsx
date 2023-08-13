@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 
-function CanvassForm({ setCompleted, setUserId }) {
+type CanvassFormProps = {
+  setCompleted: React.Dispatch<React.SetStateAction<boolean>>;
+  setUserId: React.Dispatch<React.SetStateAction<string>>;
+};
+
+function CanvassForm({ setCompleted, setUserId }: CanvassFormProps) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [postCode, setPostCode] = useState("");
@@ -76,14 +81,14 @@ function CanvassForm({ setCompleted, setUserId }) {
 }
 
 function submitForm(
-  event,
-  setCompleted,
-  setUserId,
-  firstName,
-  lastName,
-  postcode,
-  email,
-  voterIntent
+  event: React.FormEvent<HTMLFormElement>,
+  setCompleted: React.Dispatch<React.SetStateAction<boolean>>,
+  setUserId: React.Dispatch<React.SetStateAction<string>>,
+  firstName: string,
+  lastName: string,
+  postcode: string,
+  email: string,
+  voterIntent: string
 ) {
   event.preventDefault();
   const userId = crypto.randomUUID();

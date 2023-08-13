@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Chat from "./chat";
 import CanvassForm from "./canvassForm";
 

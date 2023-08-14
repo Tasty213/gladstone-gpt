@@ -5,4 +5,10 @@ boto3
 openai
 chromadb
 tiktoken
-newrelic
+opentelemetry-api
+opentelemetry-sdk
+flask
+opentelemetry-instrumentation-logging
+opentelemetry-instrumentation-flask
+opentelemetry-exporter-otlp
+opentelemetry-distro

@@ -1,5 +1,6 @@
 import logging
 from botocore.exceptions import ClientError
+from opentelemetry import trace
 
 
 class MessageData:
@@ -12,6 +13,9 @@ class MessageData:
         self.table = table
         self.logger = logging.getLogger()
 
+    @trace.get_tracer("opentelemetry.instrumentation.custom").start_as_current_span(
+        "MessageData.add_message"
+    )
     def add_message(self, messageId, userId, message, sources, time, previousMessageId):
         try:
             self.table.put_item(

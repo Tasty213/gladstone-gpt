@@ -18,6 +18,7 @@ from backend.settings import COLLECTION_NAME, PERSIST_DIRECTORY, MODEL_NAME
 import os
 import boto3
 from hashlib import sha256
+from opentelemetry import trace
 
 
 class VortexQuery:
@@ -83,6 +84,9 @@ class VortexQuery:
             combine_docs_chain_kwargs={"prompt": qa_prompt},
         )
 
+    @trace.get_tracer("opentelemetry.instrumentation.custom").start_as_current_span(
+        "VortexQuery.ask_question"
+    )
     def ask_question(
         self, input: List[Dict], table: MessageData
     ) -> tuple[str, list[Document]]:

@@ -1,5 +1,6 @@
 import logging
 from botocore.exceptions import ClientError
+from opentelemetry import trace
 
 
 class CanvassData:
@@ -12,6 +13,9 @@ class CanvassData:
         self.table = table
         self.logger = logging.getLogger()
 
+    @trace.get_tracer("opentelemetry.instrumentation.custom").start_as_current_span(
+        "CamvassData.add_canvass"
+    )
     def add_canvass(
         self, userId, firstName, lastName, postcode, email, voterIntent, time
     ):

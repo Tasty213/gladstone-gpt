@@ -17,6 +17,7 @@ function Message({ type, content, sources }: MessageProps) {
             name={source[1].name}
             link={source[1].link}
             page={source[1].page_number.toString()}
+            key={""}
           />
         ))}
       </ul>

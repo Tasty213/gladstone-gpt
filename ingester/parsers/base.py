@@ -60,13 +60,14 @@ class BaseParser:
 
         for page_num, page in enumerate(text):
             text_splitter = splitter.TokenTextSplitter(
-                chunk_size=750,
+                chunk_size=250,
                 model_name="gpt-3.5-turbo",
                 chunk_overlap=25,
             )
             chunks = text_splitter.split_text(page)
             for i, chunk in enumerate(chunks):
                 chunk_with_date = f"{metadata_parsed.get('date')}\n\n{chunk}"
+                chunk_with_date = chunk_with_date.replace("\n", " ")
                 doc = docstore.Document(
                     page_content=chunk_with_date,
                     metadata={

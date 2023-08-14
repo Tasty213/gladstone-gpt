@@ -1,3 +1,4 @@
+from hashlib import sha256
 from pathlib import Path
 from typing import List
 from langchain.embeddings import OpenAIEmbeddings
@@ -35,6 +36,7 @@ class VortexIngester:
             embeddings,
             collection_name=COLLECTION_NAME,
             persist_directory=PERSIST_DIRECTORY,
+            ids=[sha256(chunk.page_content) for chunk in chunks],
         )
 
         logger.info("Created Chroma vector store")

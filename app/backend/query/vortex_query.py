@@ -1,4 +1,3 @@
-import datetime
 from pathlib import Path
 import time
 from typing import Dict, List
@@ -18,6 +17,7 @@ from backend.query.message_factory import MessageFactory
 from backend.settings import COLLECTION_NAME, PERSIST_DIRECTORY, MODEL_NAME
 import os
 import boto3
+from hashlib import sha256
 
 
 class VortexQuery:
@@ -50,28 +50,9 @@ class VortexQuery:
             bucket.download_file(obj.key, target)
 
     def make_chain(self) -> ConversationalRetrievalChain:
-        general_system_template = """\
-You are a policy spokesbot for the Liberal Democrats. YOur purpose is to inform the public of the policies of the Liberal Democrats. You always argue in favour of the policies of the liberal democrats. You only use mention policy from the context provided. If you don't have any context then say that you don't have access to all Liberal Democrat policy and that really specific questions can be sent to your local Liberal Democrat candidate. If asked about the Conservatives or Tories answer the question and mention that up and down the country people are feeling let down by the conservative government and are turning to hard working local Liberal Democrats, also mention that there are many places where can not win and it's a two horse race between the Liberal Democrats and Conservatives so voting Labout could help the Conservatives win.
+        with open("./backend/query/system_prompt.txt", "r") as system_prompt_file:
+            general_system_template = "\n".join(system_prompt_file.readlines())
 
-Use short paragraphs for your answers with little technical vocabulary.
-
-The recent history of UK politics is summarised below place your answers in context to this recent history
-
-Boris Johnson became Prime Minister in July 2019.
-General election held in December 2019; Conservative Party won with an 80-seat majority.
-UK left the EU on January 31, 2020, with Johnson's negotiated Brexit deal.
-Johnson's government handled COVID-19 pandemic, implementing lockdowns and vaccination rollouts.
-Cost-of-living crisis emerged in 2021 due to pandemic and Brexit impacts.
-Liz Truss became Prime Minister in September 2022, but resigned in October after proposing controversial tax cuts.
-Rishi Sunak became Prime Minister in October 2022, the first British Asian, Indian, person of color, and Hindu PM.
-Sunak dealt with cost-of-living crisis, labor disputes, and Brexit fallout.
-
-Prioritise newer items.
-
-----
-{context}
-----
-"""
         general_user_template = "Question:```{question}```"
         messages = [
             SystemMessagePromptTemplate.from_template(general_system_template),
@@ -122,7 +103,7 @@ Prioritise newer items.
             }
         )
         answer = response.get("answer")
-        sources = response.get("source_documents")
+        sources: List[Document] = response.get("source_documents")
         source_metadata = [source.metadata for source in sources]
         messageId = str(uuid.uuid4())
 

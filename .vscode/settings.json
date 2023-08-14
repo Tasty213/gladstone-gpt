@@ -4,5 +4,6 @@
     },
     "eslint.validate": [
         "javascript"
-    ]
+    ],
+    "editor.mouseWheelZoom": true
 }

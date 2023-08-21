@@ -10,7 +10,8 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "cwd": "${fileDirname}",
+            "justMyCode": false
         },
         {
             "name": "Python: Run ingester",
@@ -40,22 +41,6 @@
             ],
             "console": "integratedTerminal",
             "cwd": "${fileDirname}"
-        },
-        {
-            "name": "Python: Flask",
-            "type": "python",
-            "request": "launch",
-            "module": "flask",
-            "env": {
-                "FLASK_ENV": "development",
-                "FLASK_DEBUG": "1"
-            },
-            "args": [
-                "run"
-            ],
-            "jinja": true,
-            "justMyCode": true,
-            "cwd": "${workspaceFolder}/app"
-        },
+        }
     ]
 }

@@ -7,18 +7,25 @@ from langchain.chat_models import ChatOpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.schema import Document
 from langchain.vectorstores.chroma import Chroma
+from langchain.vectorstores.base import VectorStore
 from langchain.prompts import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
     ChatPromptTemplate,
 )
-from backend.messageData import MessageData
-from backend.query.message_factory import MessageFactory
-from backend.settings import COLLECTION_NAME, PERSIST_DIRECTORY, MODEL_NAME
+from langchain.callbacks.base import AsyncCallbackHandler
+from langchain.callbacks.manager import AsyncCallbackManager
+from messageData import MessageData
+from query.message_factory import MessageFactory
+from settings import COLLECTION_NAME, PERSIST_DIRECTORY, MODEL_NAME
 import os
 import boto3
-from hashlib import sha256
 from opentelemetry import trace
+
+from langchain.chains.chat_vector_db.prompts import CONDENSE_QUESTION_PROMPT, QA_PROMPT
+from langchain.chains.llm import LLMChain
+from langchain.chains.question_answering import load_qa_chain
+from langchain.llms import OpenAI
 
 
 class VortexQuery:
@@ -26,10 +33,8 @@ class VortexQuery:
         if not Path(PERSIST_DIRECTORY).exists():
             self.download_data()
 
-        self.chain = self.make_chain()
-
+    @staticmethod
     def download_data(
-        self,
         bucket_name="gladstone-gpt-data",
         local_dir=PERSIST_DIRECTORY,
     ):
@@ -50,38 +55,103 @@ class VortexQuery:
                 continue
             bucket.download_file(obj.key, target)
 
-    def make_chain(self) -> ConversationalRetrievalChain:
-        with open("./backend/query/system_prompt.txt", "r") as system_prompt_file:
-            general_system_template = "\n".join(system_prompt_file.readlines())
-
-        general_user_template = "Question:```{question}```"
-        messages = [
-            SystemMessagePromptTemplate.from_template(general_system_template),
-            HumanMessagePromptTemplate.from_template(general_user_template),
-        ]
-        qa_prompt = ChatPromptTemplate.from_messages(messages)
-
-        model = ChatOpenAI(
-            client=None,
-            model=MODEL_NAME,
-            temperature=0.5,
-        )
+    @staticmethod
+    def get_vector_store() -> VectorStore:
         embedding = OpenAIEmbeddings(client=None)
 
-        vector_store = Chroma(
+        return Chroma(
             collection_name=COLLECTION_NAME,
             embedding_function=embedding,
             persist_directory=PERSIST_DIRECTORY,
         )
 
+    @staticmethod
+    def get_system_prompt() -> str:
+        with open("./query/system_prompt.txt", "r") as system_prompt_file:
+            general_system_template = "\n".join(system_prompt_file.readlines())
+        return general_system_template
+
+    @staticmethod
+    def get_user_prompt() -> str:
+        return "Question:```{question}```"
+
+    @staticmethod
+    def get_chat_prompt_template() -> ChatPromptTemplate:
+        system = VortexQuery.get_system_prompt()
+        user = VortexQuery.get_user_prompt()
+        messages = [
+            SystemMessagePromptTemplate.from_template(system),
+            HumanMessagePromptTemplate.from_template(user),
+        ]
+        return ChatPromptTemplate.from_messages(messages)
+
+    BASE_LLM = ChatOpenAI(
+        client=None, model=MODEL_NAME, temperature=0.5, streaming=True, verbose=True
+    )
+
+    @staticmethod
+    def make_chain(
+        vector_store: VectorStore,
+        question_handler: AsyncCallbackHandler,
+        stream_handler: AsyncCallbackHandler,
+        tracing: bool = True,
+    ) -> ConversationalRetrievalChain:
+        qa_prompt = VortexQuery.get_chat_prompt_template()
+
+        """Create a ChatVectorDBChain for question/answering."""
+        # Construct a ChatVectorDBChain with a streaming llm for combine docs
+        # and a separate, non-streaming llm for question generation
+        manager = AsyncCallbackManager([])
+        question_manager = AsyncCallbackManager([question_handler])
+        stream_manager = AsyncCallbackManager([stream_handler])
+        # if tracing:
+        #     tracer = LangChainTracer()
+        #     tracer.load_default_session()
+        #     manager.add_handler(tracer)
+        #     question_manager.add_handler(tracer)
+        #     stream_manager.add_handler(tracer)
+
+        question_gen_llm = OpenAI(
+            temperature=0,
+            verbose=True,
+            callback_manager=question_manager,
+        )
+        streaming_llm = OpenAI(
+            streaming=True,
+            callback_manager=stream_manager,
+            verbose=True,
+            temperature=0,
+        )
+
+        question_generator = LLMChain(
+            llm=question_gen_llm,
+            prompt=CONDENSE_QUESTION_PROMPT,
+            callback_manager=manager,
+        )
+        doc_chain = load_qa_chain(
+            streaming_llm,
+            chain_type="stuff",
+            prompt=QA_PROMPT,
+            callback_manager=manager,
+        )
+
+        qa = ConversationalRetrievalChain(
+            retriever=vector_store.as_retriever(),
+            combine_docs_chain=doc_chain,
+            question_generator=question_generator,
+            callback_manager=manager,
+        )
+        return qa
+
         return ConversationalRetrievalChain.from_llm(
-            model,
+            VortexQuery.BASE_LLM,
             retriever=vector_store.as_retriever(
                 search_type="mmr",
                 search_kwargs={"k": 4, "fetch_k": 10, "lambda_mult": 0.2},
             ),
             return_source_documents=True,
             combine_docs_chain_kwargs={"prompt": qa_prompt},
+            callback_manager=stream_handler,
         )
 
     @trace.get_tracer("opentelemetry.instrumentation.custom").start_as_current_span(

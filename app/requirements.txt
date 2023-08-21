@@ -1,14 +1,15 @@
 langchain
 gunicorn
-flask
 boto3
 openai
 chromadb
 tiktoken
 opentelemetry-api
 opentelemetry-sdk
-flask
 opentelemetry-instrumentation-logging
 opentelemetry-instrumentation-flask
 opentelemetry-exporter-otlp
 opentelemetry-distro
+uvicorn
+websockets
+fastapi

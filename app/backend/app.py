@@ -22,12 +22,12 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 
+from schema.message import Message
+from schema.api_question import ApiQuestion
 from messageData import MessageData
 from canvassData import CanvassData
 from query.vortex_query import VortexQuery
 from callback import QuestionCallback, AnswerCallback
-
-from langchain.callbacks.manager import AsyncCallbackManager
 
 ##########################
 # OpenTelemetry Settings #
@@ -53,8 +53,12 @@ trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(OTLPSpanExport
 # Metrics #
 ###########
 
-# Initialize metering and an exporter that can send data to an OTLP endpoint
-# SELECT count(`http.server.active_requests`) FROM Metric FACET `service.name` TIMESERIES
+# Initialize metering and an exporter that can send data to an OTLP endpoint example
+# NRQL:
+# SELECT count(`http.server.active_requests`)
+# FROM Metric
+# FACET `service.name`
+# TIMESERIES
 metrics.set_meter_provider(
     MeterProvider(
         resource=Resource.create(OTEL_RESOURCE_ATTRIBUTES),
@@ -69,12 +73,14 @@ fib_counter = metrics.get_meter("opentelemetry.instrumentation.custom").create_c
 )
 
 ########
-# Logs # - OpenTelemetry Logs are still in the experimental state, so function names may change in the future
+# Logs # - OpenTelemetry Logs are still in the experimental state, so function names
+# may change in the future
 # ########
 logging.basicConfig(level=logging.DEBUG)
 
 
-# Initialize logging and an exporter that can send data to an OTLP endpoint by attaching OTLP handler to root logger
+# Initialize logging and an exporter that can send data to an OTLP endpoint by attaching
+#  OTLP handler to root logger
 # SELECT * FROM Log WHERE instrumentation.provider='opentelemetry'
 _logs.set_logger_provider(
     LoggerProvider(resource=Resource.create(OTEL_RESOURCE_ATTRIBUTES))
@@ -110,46 +116,51 @@ messageDataTable = MessageData(
 @app.websocket("/chat")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
-    question_handler = QuestionCallback(websocket)
+    question_handler = QuestionCallback(websocket, messageDataTable)
     stream_handler = AnswerCallback(websocket)
-    chat_history = []
     qa_chain = VortexQuery.make_chain(vector_store, question_handler, stream_handler)
-    # Use the below line instead of the above line to enable tracing
-    # Ensure `langchain-server` is running
-    # qa_chain = get_chain(vectorstore, question_handler, stream_handler, tracing=True)
 
-    while True:
-        try:
-            # Receive and send back the client message
-            question = await websocket.receive_text()
-            question_handler.save(question)
-            resp = {"sender": "you", "message": question, "type": "stream"}
-            await websocket.send_json(resp)
+    try:
+        # Receive and send back the client message
+        question = await websocket.receive_json()
+        chat_history: list[Message]
+        chat_history = ApiQuestion.from_list(question).message_history
 
-            # Construct a response
-            start_resp = {"sender": "bot", "message": "", "type": "start"}
-            await websocket.send_json(start_resp)
+        messageDataTable.add_message(chat_history[-1])
 
-            result = await qa_chain.acall(
-                {"question": question, "chat_history": chat_history}
-            )
+        # Construct a response
+        start_resp = {"sender": "bot", "message": "", "type": "start"}
+        await websocket.send_json(start_resp)
 
-            chat_history.append((question, result["answer"]))
-
-            end_resp = {"sender": "bot", "message": "", "type": "end"}
-            await websocket.send_json(end_resp)
-            stream_handler.save(end_resp)
-        except WebSocketDisconnect:
-            logging.info("websocket disconnect")
-            break
-        except Exception as e:
-            logging.error(e)
-            resp = {
-                "sender": "bot",
-                "message": "Sorry, something went wrong. Try again.",
-                "type": "error",
+        result = await qa_chain.acall(
+            {
+                "question": chat_history[-1].message.content,
+                "chat_history": [
+                    chat_entry.message.content for chat_entry in chat_history[:-1]
+                ],
             }
-            await websocket.send_json(resp)
+        )
+        messageDataTable.add_message(
+            Message.from_langchain_result(
+                result.get("answer"),
+                result.get("source_documents"),
+                chat_history[-1].messageId,
+            )
+        )
+    except WebSocketDisconnect:
+        logging.info("websocket disconnect")
+    except Exception as e:
+        logging.error(e)
+        resp = {
+            "sender": "bot",
+            "message": "Sorry, something went wrong. Try again.",
+            "type": "error",
+        }
+        await websocket.send_json(resp)
+    finally:
+        end_resp = {"sender": "bot", "message": "", "type": "end"}
+        await websocket.send_json(end_resp)
+        await websocket.close()
 
 
 @trace.get_tracer("opentelemetry.instrumentation.custom").start_as_current_span(

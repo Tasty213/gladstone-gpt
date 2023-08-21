@@ -1,11 +1,7 @@
 from pathlib import Path
-import time
-from typing import Dict, List
-import uuid
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.schema import Document
 from langchain.vectorstores.chroma import Chroma
 from langchain.vectorstores.base import VectorStore
 from langchain.prompts import (
@@ -15,14 +11,11 @@ from langchain.prompts import (
 )
 from langchain.callbacks.base import AsyncCallbackHandler
 from langchain.callbacks.manager import AsyncCallbackManager
-from messageData import MessageData
-from query.message_factory import MessageFactory
 from settings import COLLECTION_NAME, PERSIST_DIRECTORY, MODEL_NAME
 import os
 import boto3
-from opentelemetry import trace
 
-from langchain.chains.chat_vector_db.prompts import CONDENSE_QUESTION_PROMPT, QA_PROMPT
+from langchain.chains.chat_vector_db.prompts import CONDENSE_QUESTION_PROMPT
 from langchain.chains.llm import LLMChain
 from langchain.chains.question_answering import load_qa_chain
 from langchain.llms import OpenAI
@@ -94,7 +87,6 @@ class VortexQuery:
         vector_store: VectorStore,
         question_handler: AsyncCallbackHandler,
         stream_handler: AsyncCallbackHandler,
-        tracing: bool = True,
     ) -> ConversationalRetrievalChain:
         qa_prompt = VortexQuery.get_chat_prompt_template()
 
@@ -104,12 +96,6 @@ class VortexQuery:
         manager = AsyncCallbackManager([])
         question_manager = AsyncCallbackManager([question_handler])
         stream_manager = AsyncCallbackManager([stream_handler])
-        # if tracing:
-        #     tracer = LangChainTracer()
-        #     tracer.load_default_session()
-        #     manager.add_handler(tracer)
-        #     question_manager.add_handler(tracer)
-        #     stream_manager.add_handler(tracer)
 
         question_gen_llm = OpenAI(
             temperature=0,
@@ -131,69 +117,18 @@ class VortexQuery:
         doc_chain = load_qa_chain(
             streaming_llm,
             chain_type="stuff",
-            prompt=QA_PROMPT,
+            prompt=qa_prompt,
             callback_manager=manager,
         )
 
         qa = ConversationalRetrievalChain(
-            retriever=vector_store.as_retriever(),
-            combine_docs_chain=doc_chain,
-            question_generator=question_generator,
-            callback_manager=manager,
-        )
-        return qa
-
-        return ConversationalRetrievalChain.from_llm(
-            VortexQuery.BASE_LLM,
             retriever=vector_store.as_retriever(
                 search_type="mmr",
                 search_kwargs={"k": 4, "fetch_k": 10, "lambda_mult": 0.2},
             ),
+            combine_docs_chain=doc_chain,
+            question_generator=question_generator,
+            callback_manager=manager,
             return_source_documents=True,
-            combine_docs_chain_kwargs={"prompt": qa_prompt},
-            callback_manager=stream_handler,
         )
-
-    @trace.get_tracer("opentelemetry.instrumentation.custom").start_as_current_span(
-        "VortexQuery.ask_question"
-    )
-    def ask_question(
-        self, input: List[Dict], table: MessageData
-    ) -> tuple[str, list[Document]]:
-        chat_history = list(map(lambda x: MessageFactory.create_message(x), input[:-1]))
-        question = input[-1]
-        table.add_message(
-            question.get("messageId"),
-            question.get("userId"),
-            question.get("content"),
-            question.get("source"),
-            question.get("time"),
-            question.get("previousMessageId"),
-        )
-        response = self.chain(
-            {
-                "question": question.get("content"),
-                "chat_history": chat_history,
-            }
-        )
-        answer = response.get("answer")
-        sources: List[Document] = response.get("source_documents")
-        source_metadata = [source.metadata for source in sources]
-        messageId = str(uuid.uuid4())
-
-        table.add_message(
-            messageId,
-            "AI",
-            answer,
-            source_metadata,
-            round(time.time() * 1000),
-            question.get("messageId"),
-        )
-
-        return {
-            "status": "SUCCESS",
-            "answer": answer,
-            "sources": source_metadata,
-            "previousMessageId": question.get("messageId"),
-            "messageId": messageId,
-        }
+        return qa

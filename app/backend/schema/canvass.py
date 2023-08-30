@@ -8,4 +8,4 @@ class Canvass(BaseModel):
     postcode: str
     email: str
     voterIntent: str
-    time: str
+    time: int

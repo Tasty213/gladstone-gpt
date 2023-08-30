@@ -136,7 +136,7 @@ async def websocket_endpoint(websocket: WebSocket):
             {
                 "question": chat_history[-1].message.content,
                 "chat_history": [
-                    chat_entry.message.content for chat_entry in chat_history[:-1]
+                    chat_entry.message for chat_entry in chat_history[:-1]
                 ],
             }
         )

@@ -1,4 +1,6 @@
 from datetime import datetime
+
+from sympy import true
 from schema.canvass import Canvass
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
@@ -19,7 +21,7 @@ import os
 import boto3
 from uuid import uuid4, uuid1
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 
@@ -208,7 +210,7 @@ def submit_canvass(canvass: Canvass):
         return {"status": "ERROR", "reason": str(e)}
 
 
-app.mount("/", StaticFiles(directory=build_dir), name="static")
+app.mount("/", StaticFiles(directory=build_dir, html=True), name="static")
 
 # test_websocket()
 if __name__ == "__main__":

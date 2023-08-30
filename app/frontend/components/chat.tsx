@@ -96,7 +96,7 @@ function sendChatMessage(
 
   // Send the user message to the server
 
-  const chatSocket = new WebSocket(`ws://${document.location.host}/chat`);
+  const chatSocket = new WebSocket(`wss://${document.location.host}/chat`);
   chatSocket.onopen = (event) => {
     chatSocket.send(JSON.stringify(messages));
   };

@@ -132,7 +132,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
         # Construct a response
         response_message_id = str(uuid4())
-        response_message_time = datetime.now()
+        response_message_time = int(datetime.now())
         start_resp = {
             "sender": "bot",
             "messageId": response_message_id,

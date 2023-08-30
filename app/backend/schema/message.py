@@ -13,7 +13,7 @@ class Message:
     previousMessageId: str
     sources: list[dict] | None
     user: str
-    time: str
+    time: int
     sender_type: str
 
     @staticmethod

@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from sympy import true
 from schema.canvass import Canvass
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
@@ -21,7 +20,7 @@ import os
 import boto3
 from uuid import uuid4, uuid1
 
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 

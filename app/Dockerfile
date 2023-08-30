@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir -r /app/requirements.txt
 
 RUN useradd -m myuser
 USER myuser
-CMD ["gunicorn", "wsgi:app"]
+CMD ["gunicorn", "--chdir", "./backend", "-k", "uvicorn.workers.UvicornWorker", "app:app"]

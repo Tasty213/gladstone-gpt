@@ -1,4 +1,4 @@
-from fastapi.testclient import TestClient
+from schema.canvass import Canvass
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
@@ -166,18 +166,17 @@ async def websocket_endpoint(websocket: WebSocket):
 @trace.get_tracer("opentelemetry.instrumentation.custom").start_as_current_span(
     "/submit_canvass"
 )
-@app.route("/submit_canvass", methods=["POST"])
-def submit_canvass(request):
+@app.post("/submit_canvass")
+def submit_canvass(canvass: Canvass):
     try:
-        data = request.get_json()
         canvassDataTable.add_canvass(
-            data.get("userId"),
-            data.get("firstName"),
-            data.get("lastName"),
-            data.get("postcode"),
-            data.get("email"),
-            data.get("voterIntent"),
-            data.get("time"),
+            canvass.userId,
+            canvass.firstName,
+            canvass.lastName,
+            canvass.postcode,
+            canvass.email,
+            canvass.voterIntent,
+            canvass.time,
         )
         return {"status": "SUCCESS"}
 
@@ -185,20 +184,6 @@ def submit_canvass(request):
         if app.debug:
             raise e
         return {"status": "ERROR", "reason": str(e)}
-
-
-def test_read_main():
-    client = TestClient(app)
-    response = client.get("/")
-    assert response.status_code == 200
-    assert response.json() == {"msg": "Hello World"}
-
-
-# def test_websocket():
-#     client = TestClient(app)
-#     with client.websocket_connect("/chat") as websocket:
-#         data = websocket.receive_json()
-#         assert data == {"msg": "Hello WebSocket"}
 
 
 app.mount("/", StaticFiles(directory=build_dir), name="static")

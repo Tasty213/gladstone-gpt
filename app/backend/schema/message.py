@@ -36,7 +36,7 @@ class Message:
         sources: list[Document],
         previousMessageId: str,
         response_message_id: str,
-        response_time: str,
+        response_time: int,
     ) -> Self:
         return Message(
             message=AIMessage(content=message),

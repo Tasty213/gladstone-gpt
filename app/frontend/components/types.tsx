@@ -7,13 +7,35 @@ type MessageData = {
   previousMessageId: string;
 };
 
-type MessageApiResponse = {
-  answer: string;
+interface BaseMessage {
+  sender: string;
+  type: "start" | "end" | "error" | "stream";
+}
+
+interface StartMessage extends BaseMessage {
   messageId: string;
   previousMessageId: string;
+  time: Number;
+  type: "start";
+}
+
+interface EndMessage extends BaseMessage {
+  messageId: string;
+  previousMessageId: string;
+  message: string;
   sources: SourceData[];
-  status: string;
-};
+  type: "end";
+}
+
+interface ErrorMessage extends BaseMessage {
+  message: string;
+  type: "error";
+}
+
+interface StreamMessage extends BaseMessage {
+  message: string;
+  type: "stream";
+}
 
 type SourceSet = Record<string, SourceData>;
 
@@ -26,4 +48,13 @@ type SourceData = {
   type: string;
 };
 
-export { MessageData, SourceData, MessageApiResponse, SourceSet };
+export {
+  MessageData,
+  SourceData,
+  BaseMessage,
+  StartMessage,
+  EndMessage,
+  ErrorMessage,
+  StreamMessage,
+  SourceSet,
+};

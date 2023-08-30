@@ -1,3 +1,4 @@
+from datetime import datetime
 from schema.canvass import Canvass
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
@@ -16,7 +17,7 @@ from opentelemetry.sdk.resources import Resource
 import logging
 import os
 import boto3
-import uuid
+from uuid import uuid4, uuid1
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
@@ -34,7 +35,7 @@ from callback import QuestionCallback, AnswerCallback
 ##########################
 
 OTEL_RESOURCE_ATTRIBUTES = {
-    "service.instance.id": str(uuid.uuid1()),
+    "service.instance.id": str(uuid1()),
     "environment": "local",
 }
 
@@ -129,7 +130,15 @@ async def websocket_endpoint(websocket: WebSocket):
         messageDataTable.add_message(chat_history[-1])
 
         # Construct a response
-        start_resp = {"sender": "bot", "message": "", "type": "start"}
+        response_message_id = str(uuid4())
+        response_message_time = str(datetime.now())
+        start_resp = {
+            "sender": "bot",
+            "messageId": response_message_id,
+            "previousMessageId": chat_history[-1].messageId,
+            "time": response_message_time,
+            "type": "start",
+        }
         await websocket.send_json(start_resp)
 
         result = await qa_chain.acall(
@@ -140,13 +149,28 @@ async def websocket_endpoint(websocket: WebSocket):
                 ],
             }
         )
-        messageDataTable.add_message(
-            Message.from_langchain_result(
-                result.get("answer"),
-                result.get("source_documents"),
-                chat_history[-1].messageId,
-            )
+
+        output_message: Message
+        output_message = Message.from_langchain_result(
+            result.get("answer"),
+            result.get("source_documents"),
+            chat_history[-1].messageId,
+            response_message_id,
+            response_message_time,
         )
+
+        await websocket.send_json(
+            {
+                "sender": "bot",
+                "id": output_message.messageId,
+                "previousMessageId": output_message.previousMessageId,
+                "message": output_message.message.content,
+                "sources": output_message.sources,
+                "type": "end",
+            }
+        )
+
+        messageDataTable.add_message(output_message)
     except WebSocketDisconnect:
         logging.info("websocket disconnect")
     except Exception as e:
@@ -158,8 +182,6 @@ async def websocket_endpoint(websocket: WebSocket):
         }
         await websocket.send_json(resp)
     finally:
-        end_resp = {"sender": "bot", "message": "", "type": "end"}
-        await websocket.send_json(end_resp)
         await websocket.close()
 
 

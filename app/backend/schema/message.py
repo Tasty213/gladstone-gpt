@@ -1,7 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
 from typing import Self
-from uuid import uuid4
 
 from langchain.schema import BaseMessage, AIMessage, HumanMessage, Document
 
@@ -34,15 +32,19 @@ class Message:
 
     @staticmethod
     def from_langchain_result(
-        message: str, sources: list[Document], previousMessageId: str
+        message: str,
+        sources: list[Document],
+        previousMessageId: str,
+        response_message_id: str,
+        response_time: str,
     ) -> Self:
         return Message(
             message=AIMessage(content=message),
-            messageId=str(uuid4()),
+            messageId=response_message_id,
             previousMessageId=previousMessageId,
             sources=[source.metadata for source in sources],
             user="AI",
-            time=str(datetime.now()),
+            time=response_time,
             sender_type="AI",
         )
 

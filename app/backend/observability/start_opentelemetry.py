@@ -1,5 +1,5 @@
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry import _logs
 from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
@@ -9,7 +9,7 @@ from opentelemetry import metrics
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
-from opentelemetry.sdk.resources import Resource
+from opentelemetry.trace import Tracer
 from opentelemetry import trace
 
 import logging
@@ -17,11 +17,12 @@ import logging
 from observability.heroku_detector import HerokuResourceDetector
 
 
-def startup():
+def startup() -> None:
     otel_resource_attributes = HerokuResourceDetector()
-    provider = TracerProvider(resource=otel_resource_attributes.detect())
-    provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter()))
-    trace.set_tracer_provider(provider)
+    tracer_provider = TracerProvider(resource=otel_resource_attributes.detect())
+    tracer_provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter()))
+    tracer_provider.add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
+    trace.set_tracer_provider(tracer_provider)
 
     metrics.set_meter_provider(
         MeterProvider(

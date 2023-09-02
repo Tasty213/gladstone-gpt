@@ -4,6 +4,7 @@ from opentelemetry import trace
 
 from schema.api_question import Message
 
+tracer = trace.get_tracer("gladstone.messageData")
 
 class MessageData:
     """Encapsulates an Amazon DynamoDB table of movie data."""
@@ -15,9 +16,7 @@ class MessageData:
         self.table = table
         self.logger = logging.getLogger()
 
-    @trace.get_tracer("opentelemetry.instrumentation.custom").start_as_current_span(
-        "MessageData.add_message"
-    )
+    @tracer.start_as_current_span("gladstone.MessageData.add_message")
     def add_message(
         self,
         question: Message,

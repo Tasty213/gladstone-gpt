@@ -18,23 +18,25 @@ from callback import QuestionCallback, AnswerCallback
 from observability import start_opentelemetry
 
 start_opentelemetry.startup()
+tracer = trace.get_tracer("gladstone.app")
 
-build_dir = os.getenv("BUILD_DIR", "../dist")
-app = FastAPI()
+with tracer.start_as_current_span("startup") as span:
+    build_dir = os.getenv("BUILD_DIR", "../dist")
+    app = FastAPI()
 
-vector_store = VortexQuery().get_vector_store()
+    vector_store = VortexQuery().get_vector_store()
 
-database_region = os.getenv("DB_REGION", "eu-north-1")
-database_name_canvass = os.getenv("DB_NAME_CANVASS", "canvassData")
-database_name_message = os.getenv("DB_NAME_MESSAGE", "messages")
-canvassDataTable = CanvassData(
-    boto3.resource("dynamodb", region_name=database_region).Table(database_name_canvass)
-)
-messageDataTable = MessageData(
-    boto3.resource("dynamodb", region_name=database_region).Table(database_name_message)
-)
+    database_region = os.getenv("DB_REGION", "eu-north-1")
+    database_name_canvass = os.getenv("DB_NAME_CANVASS", "canvassData")
+    database_name_message = os.getenv("DB_NAME_MESSAGE", "messages")
+    canvassDataTable = CanvassData(
+        boto3.resource("dynamodb", region_name=database_region).Table(database_name_canvass)
+    )
+    messageDataTable = MessageData(
+        boto3.resource("dynamodb", region_name=database_region).Table(database_name_message)
+    )
 
-
+@tracer.start_as_current_span("app.chat")
 @app.websocket("/chat")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
@@ -106,9 +108,8 @@ async def websocket_endpoint(websocket: WebSocket):
         await websocket.close()
 
 
-@trace.get_tracer("opentelemetry.instrumentation.custom").start_as_current_span(
-    "/submit_canvass"
-)
+
+@tracer.start_as_current_span("app.submit_canvass")
 @app.post("/submit_canvass")
 def submit_canvass(canvass: Canvass):
     try:

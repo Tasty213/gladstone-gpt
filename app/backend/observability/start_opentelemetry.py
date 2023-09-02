@@ -1,3 +1,5 @@
+import os
+
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
@@ -20,8 +22,12 @@ from observability.heroku_detector import HerokuResourceDetector
 def startup() -> None:
     otel_resource_attributes = HerokuResourceDetector()
     tracer_provider = TracerProvider(resource=otel_resource_attributes.detect())
-    tracer_provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter()))
-    tracer_provider.add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
+
+    if HerokuResourceDetector.on_heroku():
+        tracer_provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter()))
+    else:
+        tracer_provider.add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
+
     trace.set_tracer_provider(tracer_provider)
 
     metrics.set_meter_provider(

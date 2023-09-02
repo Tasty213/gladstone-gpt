@@ -19,3 +19,7 @@ class HerokuResourceDetector(ResourceDetector):
                 ResourceAttributes.CLOUD_PROVIDER: "heroku",
             }
         )
+
+    @staticmethod
+    def on_heroku():
+        return os.getenv("PORT") != ""

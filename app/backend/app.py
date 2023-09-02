@@ -25,7 +25,7 @@ start_opentelemetry.startup()
 tracer = trace.get_tracer("gladstone.app")
 
 botocore.session.get_session()
-with tracer.start_as_current_span("startup") as span:
+with tracer.start_as_current_span("app.startup") as span:
     build_dir = os.getenv("BUILD_DIR", "../dist")
     app = FastAPI()
 

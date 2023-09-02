@@ -19,7 +19,9 @@ from langchain.chains.chat_vector_db.prompts import CONDENSE_QUESTION_PROMPT
 from langchain.chains.llm import LLMChain
 from langchain.chains.question_answering import load_qa_chain
 from langchain.llms import OpenAI
+from opentelemetry import trace
 
+tracer = trace.get_tracer("gladstone.vortex_query")
 
 class VortexQuery:
     def __init__(self):
@@ -27,6 +29,7 @@ class VortexQuery:
             self.download_data()
 
     @staticmethod
+    @tracer.start_as_current_span("gladstone.VortexQuery.download_data")
     def download_data(
         bucket_name="gladstone-gpt-data",
         local_dir=PERSIST_DIRECTORY,
@@ -49,6 +52,7 @@ class VortexQuery:
             bucket.download_file(obj.key, target)
 
     @staticmethod
+    @tracer.start_as_current_span("gladstone.VortexQuery.get_vector_store")
     def get_vector_store() -> VectorStore:
         embedding = OpenAIEmbeddings(client=None)
 
@@ -83,6 +87,7 @@ class VortexQuery:
     )
 
     @staticmethod
+    @tracer.start_as_current_span("gladstone.VortexQuery.make_chain")
     def make_chain(
         vector_store: VectorStore,
         question_handler: AsyncCallbackHandler,

@@ -32,3 +32,14 @@ jobs:
         email: ${{ secrets.HEROKU_EMAIL }}
         heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
         dockerfile_directory: ./app
+    - name: Set Release Version from Tag
+      run: echo "RELEASE_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+    # This step creates a new Change Tracking Marker
+    - name: New Relic Application Deployment Marker
+      uses: newrelic/deployment-marker-action@v2.2.0
+      with:
+        apiKey: ${{ secrets.NEW_RELIC_API_KEY }}
+        region: "US"
+        guid: ${{ secrets.NEW_RELIC_DEPLOYMENT_ENTITY_GUID }}
+        version: "${{ env.RELEASE_VERSION }}"
+        user: "${{ github.actor }}"

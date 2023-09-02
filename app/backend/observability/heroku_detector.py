@@ -22,4 +22,4 @@ class HerokuResourceDetector(ResourceDetector):
 
     @staticmethod
     def on_heroku():
-        return os.getenv("PORT") != ""
+        return os.getenv("PORT") is not None

@@ -3,6 +3,8 @@ import logging
 import os
 import boto3
 from uuid import uuid4
+
+import botocore.exceptions
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 import uvicorn
@@ -17,9 +19,12 @@ from query.vortex_query import VortexQuery
 from callback import QuestionCallback, AnswerCallback
 from observability import start_opentelemetry
 
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+
 start_opentelemetry.startup()
 tracer = trace.get_tracer("gladstone.app")
 
+botocore.session.get_session()
 with tracer.start_as_current_span("startup") as span:
     build_dir = os.getenv("BUILD_DIR", "../dist")
     app = FastAPI()
@@ -131,6 +136,8 @@ def submit_canvass(canvass: Canvass):
 
 
 app.mount("/", StaticFiles(directory=build_dir, html=True), name="static")
+
+FastAPIInstrumentor.instrument_app(app)
 
 if __name__ == "__main__":
     uvicorn.run(

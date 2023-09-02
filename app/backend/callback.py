@@ -31,5 +31,4 @@ class AnswerCallback(AsyncCallbackHandler):
 
     async def on_llm_new_token(self, token: str, **kwargs: Any) -> None:
         resp = {"sender": "bot", "message": token, "type": "stream"}
-        print(resp)
         await self.websocket.send_json(resp)

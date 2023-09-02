@@ -18,29 +18,22 @@ from observability.heroku_detector import HerokuResourceDetector
 
 
 def startup():
-    OTEL_RESOURCE_ATTRIBUTES = HerokuResourceDetector()
-
-    trace.set_tracer_provider(
-        TracerProvider(resource=OTEL_RESOURCE_ATTRIBUTES.detect()).add_span_processor(
-            BatchSpanProcessor(OTLPSpanExporter())
-        )
-    )
+    otel_resource_attributes = HerokuResourceDetector()
+    provider = TracerProvider(resource=otel_resource_attributes.detect())
+    provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter()))
+    trace.set_tracer_provider(provider)
 
     metrics.set_meter_provider(
         MeterProvider(
-            resource=OTEL_RESOURCE_ATTRIBUTES.detect(),
+            resource=otel_resource_attributes.detect(),
             metric_readers=[PeriodicExportingMetricReader(OTLPMetricExporter())],
         )
     )
 
     logging.basicConfig(level=logging.DEBUG)
-    _logs.set_logger_provider(
-        LoggerProvider(resource=OTEL_RESOURCE_ATTRIBUTES.detect())
-    )
-    logging.getLogger().addHandler(
-        LoggingHandler(
-            logger_provider=_logs.get_logger_provider().add_log_record_processor(
-                BatchLogRecordProcessor(OTLPLogExporter())
-            )
-        )
-    )
+    logger_provider = LoggerProvider(resource=otel_resource_attributes.detect())
+    logger_provider.add_log_record_processor(BatchLogRecordProcessor(OTLPLogExporter()))
+
+    _logs.set_logger_provider(logger_provider)
+
+    logging.getLogger().addHandler(LoggingHandler(logger_provider=logger_provider))

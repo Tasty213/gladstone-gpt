@@ -1,0 +1,12 @@
+boto3
+fastapi
+uvicorn
+langchain
+openai
+botocore
+opentelemetry-api
+opentelemetry-sdk
+opentelemetry-exporter-otlp
+chromadb
+tiktoken
+

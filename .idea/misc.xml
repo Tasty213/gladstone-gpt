@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="Black">
+    <option name="enabledOnReformat" value="true" />
+    <option name="enabledOnSave" value="true" />
+    <option name="sdkUUID" value="4e5e6b56-08f3-46b2-9865-bb33add5147a" />
+  </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.11 (gladstone-gpt)" project-jdk-type="Python SDK" />
 </project>

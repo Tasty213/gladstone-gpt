@@ -1,9 +1,7 @@
 import os
 from opentelemetry.sdk.resources import Resource, ResourceDetector
 from opentelemetry.semconv.resource import ResourceAttributes
-from app.backend.observability.heroku_sementatic_conventions import (
-    HerokuSemanticConventions as Heroku,
-)
+from observability.heroku_sementatic_conventions import HerokuSemanticConventions as Heroku
 
 
 class HerokuResourceDetector(ResourceDetector):

@@ -14,7 +14,7 @@ from opentelemetry import trace
 
 import logging
 
-from heroku_detector import HerokuResourceDetector
+from observability.heroku_detector import HerokuResourceDetector
 
 
 def startup():
@@ -35,7 +35,7 @@ def startup():
 
     logging.basicConfig(level=logging.DEBUG)
     _logs.set_logger_provider(
-        LoggerProvider(resource=Resource.create(OTEL_RESOURCE_ATTRIBUTES))
+        LoggerProvider(resource=OTEL_RESOURCE_ATTRIBUTES.detect())
     )
     logging.getLogger().addHandler(
         LoggingHandler(

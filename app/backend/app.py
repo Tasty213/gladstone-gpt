@@ -15,9 +15,9 @@ from messageData import MessageData
 from canvassData import CanvassData
 from query.vortex_query import VortexQuery
 from callback import QuestionCallback, AnswerCallback
-from observability.start_opentelemetry import startup
+from observability import start_opentelemetry
 
-startup()
+start_opentelemetry.startup()
 
 build_dir = os.getenv("BUILD_DIR", "../dist")
 app = FastAPI()

@@ -19,13 +19,12 @@ class MessageData:
         self.table = table
         self.logger = logging.getLogger()
 
-    @tracer.start_as_current_span("gladstone.MessageData.add_message")
     def add_message(
         self,
         question: Message,
     ):
         with tracer.start_as_current_span(
-            "gladstone.CanvassData.add_canvass",
+            "gladstone.MessageData.add_message",
             attributes={
                 "db.system": "dynamodb",
                 "db.name": os.getenv("DB_NAME_MESSAGE"),

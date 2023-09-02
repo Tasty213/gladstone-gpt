@@ -25,4 +25,4 @@ opentelemetry-instrumentation-tortoiseorm
 opentelemetry-instrumentation-urllib3
 chromadb
 tiktoken
-
+gunicorn

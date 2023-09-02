@@ -1,103 +1,23 @@
 from datetime import datetime
-
-from schema.canvass import Canvass
-from opentelemetry import trace
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
-from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
-from opentelemetry import _logs
-from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
-from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
-from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
-from opentelemetry import metrics
-from opentelemetry.sdk.metrics import MeterProvider
-from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
-from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
-from opentelemetry.sdk.resources import Resource
-
 import logging
 import os
 import boto3
-from uuid import uuid4, uuid1
-
+from uuid import uuid4
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 import uvicorn
+from opentelemetry import trace
 
+from schema.canvass import Canvass
 from schema.message import Message
 from schema.api_question import ApiQuestion
 from messageData import MessageData
 from canvassData import CanvassData
 from query.vortex_query import VortexQuery
 from callback import QuestionCallback, AnswerCallback
+from observability.start_opentelemetry import startup
 
-##########################
-# OpenTelemetry Settings #
-##########################
-
-OTEL_RESOURCE_ATTRIBUTES = {
-    "service.instance.id": str(uuid1()),
-    "environment": "local",
-}
-
-##########
-# Traces #
-##########
-
-# Initialize tracing and an exporter that can send data to an OTLP endpoint
-# SELECT * FROM Span WHERE instrumentation.provider='opentelemetry'
-trace.set_tracer_provider(
-    TracerProvider(resource=Resource.create(OTEL_RESOURCE_ATTRIBUTES))
-)
-trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(OTLPSpanExporter()))
-
-###########
-# Metrics #
-###########
-
-# Initialize metering and an exporter that can send data to an OTLP endpoint example
-# NRQL:
-# SELECT count(`http.server.active_requests`)
-# FROM Metric
-# FACET `service.name`
-# TIMESERIES
-metrics.set_meter_provider(
-    MeterProvider(
-        resource=Resource.create(OTEL_RESOURCE_ATTRIBUTES),
-        metric_readers=[PeriodicExportingMetricReader(OTLPMetricExporter())],
-    )
-)
-metrics.get_meter_provider()
-fib_counter = metrics.get_meter("opentelemetry.instrumentation.custom").create_counter(
-    "fibonacci.invocations",
-    unit="1",
-    description="Measures the number of times the fibonacci method is invoked.",
-)
-
-########
-# Logs # - OpenTelemetry Logs are still in the experimental state, so function names
-# may change in the future
-# ########
-logging.basicConfig(level=logging.DEBUG)
-
-
-# Initialize logging and an exporter that can send data to an OTLP endpoint by attaching
-#  OTLP handler to root logger
-# SELECT * FROM Log WHERE instrumentation.provider='opentelemetry'
-_logs.set_logger_provider(
-    LoggerProvider(resource=Resource.create(OTEL_RESOURCE_ATTRIBUTES))
-)
-logging.getLogger().addHandler(
-    LoggingHandler(
-        logger_provider=_logs.get_logger_provider().add_log_record_processor(
-            BatchLogRecordProcessor(OTLPLogExporter())
-        )
-    )
-)
-
-#####################
-# Flask Application #
-#####################
+startup()
 
 build_dir = os.getenv("BUILD_DIR", "../dist")
 app = FastAPI()

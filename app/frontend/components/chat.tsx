@@ -52,8 +52,13 @@ function Chat({ userId }: ChatProps) {
           value={text}
           placeholder="Type your message here"
           onChange={(e) => setText(e.target.value)}
+          disabled={inFlight}
         />
-        <button id="send-button" className={inFlight ? "disabled" : "enabled"}>
+        <button
+          id="send-button"
+          className={inFlight ? "disabled" : "enabled"}
+          disabled={inFlight}
+        >
           Send
         </button>
       </form>

@@ -1,70 +1,21 @@
-import pytest
-from unittest.mock import MagicMock
 from query.vortex_query import VortexQuery
 from langchain.chains import ConversationalRetrievalChain
-
-
-# Mocking OpenAIEmbeddings and other dependencies as needed for testing
-class MockOpenAIEmbeddings:
-    pass
-
-
-class MockVectorStore:
-    pass
-
-
-class MockAsyncCallbackHandler:
-    pass
-
-
-class MockAsyncCallbackManager:
-    pass
-
-
-class MockChatOpenAI:
-    pass
-
-
-@pytest.fixture
-def mock_openai_embeddings(monkeypatch):
-    monkeypatch.setattr(VortexQuery, "download_document_store", MagicMock())
-    monkeypatch.setattr(VortexQuery, "get_system_prompt", lambda: "Mock System Prompt")
-    monkeypatch.setattr(VortexQuery, "get_user_prompt", lambda: "Mock User Prompt")
-    monkeypatch.setattr(VortexQuery, "BASE_LLM", MockChatOpenAI())
-    monkeypatch.setattr(
-        VortexQuery, "get_chat_prompt_template", lambda: "Mock Chat Prompt Template"
-    )
-    monkeypatch.setattr(VortexQuery, "get_vector_store", lambda: MockVectorStore())
-
-
-@pytest.fixture
-def mock_async_callback_handler():
-    return MockAsyncCallbackHandler()
-
-
-@pytest.fixture
-def mock_async_callback_manager():
-    return MockAsyncCallbackManager()
-
-
-@pytest.fixture
-def mock_conversational_retrieval_chain(monkeypatch):
-    monkeypatch.setattr(VortexQuery, "download_document_store", MagicMock())
-    return VortexQuery.make_chain(
-        MockVectorStore(), MockAsyncCallbackHandler(), MockAsyncCallbackHandler()
-    )
+from langchain.vectorstores import VectorStore
+from langchain.prompts import ChatPromptTemplate
+from langchain.callbacks.base import AsyncCallbackHandler
 
 
 # Test download_data method
 def test_download_data():
     # Implement your test for the download_data method here
+    # VortexQuery.download_data()
     pass
 
 
 # Test get_vector_store method
-def test_get_vector_store(mock_openai_embeddings):
+def test_get_vector_store():
     vector_store = VortexQuery.get_vector_store()
-    assert isinstance(vector_store, MockVectorStore)
+    assert isinstance(vector_store, VectorStore)
 
 
 # Test get_system_prompt method
@@ -80,17 +31,17 @@ def test_get_user_prompt():
 
 
 # Test get_chat_prompt_template method
-def test_get_chat_prompt_template(mock_openai_embeddings):
+def test_get_chat_prompt_template():
     chat_prompt_template = VortexQuery.get_chat_prompt_template()
-    assert chat_prompt_template == "Mock Chat Prompt Template"
+    assert isinstance(chat_prompt_template, ChatPromptTemplate)
 
 
 # Test make_chain method
-def test_make_chain(
-    mock_openai_embeddings, mock_async_callback_handler, mock_async_callback_manager
-):
+def test_make_chain():
     chain = VortexQuery.make_chain(
-        MockVectorStore(), mock_async_callback_handler, mock_async_callback_handler
+        VortexQuery.get_vector_store(),
+        AsyncCallbackHandler(),
+        AsyncCallbackHandler(),
     )
     assert isinstance(chain, ConversationalRetrievalChain)
 

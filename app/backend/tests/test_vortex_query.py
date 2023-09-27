@@ -76,7 +76,7 @@ def test_get_system_prompt():
 # Test get_user_prompt method
 def test_get_user_prompt():
     user_prompt = VortexQuery.get_user_prompt()
-    assert user_prompt == "Mock User Prompt"
+    assert user_prompt == "Question:```{question}```"
 
 
 # Test get_chat_prompt_template method

@@ -39,9 +39,9 @@ jobs:
         pip install -r app/requirements.txt
         pip install -r ingester/requirements.txt
         pip install -r scraper/requirements.txt
-    - name: Running pytest
+    - name: Running pytest for app
+      working-directory: ./app/backend
       run: |
-        cd ./app/backend
         touch ./conftest.py
         pytest
         rm ./conftest.py

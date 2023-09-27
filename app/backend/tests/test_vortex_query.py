@@ -34,6 +34,7 @@ def test_get_chat_prompt_template():
 
 
 def test_make_chain():
+    MonkeyPatch().setenv("OPENAI_API_KEY", "FAKE_API_KEY")
     llms.OpenAI = llms.FakeListLLM
     chain = VortexQuery.make_chain(
         VortexQuery.get_vector_store(),

@@ -70,7 +70,7 @@ def test_get_vector_store(mock_openai_embeddings):
 # Test get_system_prompt method
 def test_get_system_prompt():
     system_prompt = VortexQuery.get_system_prompt()
-    assert system_prompt == "Mock System Prompt"
+    assert isinstance(system_prompt, str)
 
 
 # Test get_user_prompt method

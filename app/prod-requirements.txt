@@ -15,4 +15,3 @@ opentelemetry-instrumentation-fastapi
 chromadb
 tiktoken
 gunicorn
-moto[s3]

@@ -6,48 +6,38 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain.vectorstores import VectorStore
 from langchain.prompts import ChatPromptTemplate
 from langchain.callbacks.base import AsyncCallbackHandler
+from langchain import llms
 
 
-# Test download_data method
 def test_download_data():
-    # Implement your test for the download_data method here
-    # VortexQuery.download_data()
     pass
 
 
-# Test get_vector_store method
 def test_get_vector_store():
     vector_store = VortexQuery.get_vector_store()
     assert isinstance(vector_store, VectorStore)
 
 
-# Test get_system_prompt method
 def test_get_system_prompt():
     system_prompt = VortexQuery.get_system_prompt()
     assert isinstance(system_prompt, str)
 
 
-# Test get_user_prompt method
 def test_get_user_prompt():
     user_prompt = VortexQuery.get_user_prompt()
     assert user_prompt == "Question:```{question}```"
 
 
-# Test get_chat_prompt_template method
 def test_get_chat_prompt_template():
     chat_prompt_template = VortexQuery.get_chat_prompt_template()
     assert isinstance(chat_prompt_template, ChatPromptTemplate)
 
 
-# Test make_chain method
-@mock.patch("langchain.llms.OpenAI", autospec=True)
-def test_make_chain(OpenAI):
+def test_make_chain():
+    llms.OpenAI = llms.FakeListLLM
     chain = VortexQuery.make_chain(
         VortexQuery.get_vector_store(),
         AsyncCallbackHandler(),
         AsyncCallbackHandler(),
     )
     assert isinstance(chain, ConversationalRetrievalChain)
-
-
-# Add more tests as needed for other methods and functionalities of VortexQuery

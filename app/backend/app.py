@@ -52,7 +52,15 @@ async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     question_handler = QuestionCallback(websocket, messageDataTable)
     stream_handler = AnswerCallback(websocket)
-    qa_chain = VortexQuery.make_chain(vector_store, question_handler, stream_handler)
+    qa_chain = VortexQuery.make_chain(
+        vector_store,
+        question_handler,
+        stream_handler,
+        os.getenv("k", 4),
+        os.getenv("fetch_k", 20),
+        os.getenv("lambda_mult", 0.5),
+        os.getenv("temperature", 0.7),
+    )
 
     try:
         # Receive and send back the client message

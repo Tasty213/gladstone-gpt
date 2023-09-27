@@ -23,10 +23,12 @@ from opentelemetry import trace
 
 tracer = trace.get_tracer("gladstone.vortex_query")
 
+
 class VortexQuery:
-    def __init__(self):
+    @staticmethod
+    def download_document_store():
         if not Path(PERSIST_DIRECTORY).exists():
-            self.download_data()
+            VortexQuery.download_data()
 
     @staticmethod
     @tracer.start_as_current_span("gladstone.VortexQuery.download_data")
@@ -54,6 +56,7 @@ class VortexQuery:
     @staticmethod
     @tracer.start_as_current_span("gladstone.VortexQuery.get_vector_store")
     def get_vector_store() -> VectorStore:
+        VortexQuery.download_document_store()
         embedding = OpenAIEmbeddings(client=None)
 
         return Chroma(

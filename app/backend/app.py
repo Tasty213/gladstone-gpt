@@ -29,7 +29,7 @@ with tracer.start_as_current_span("app.startup") as span:
     build_dir = os.getenv("BUILD_DIR", "../dist")
     app = FastAPI()
 
-    vector_store = VortexQuery().get_vector_store()
+    vector_store = VortexQuery.get_vector_store()
 
     database_region = os.getenv("DB_REGION", "eu-north-1")
     database_name_canvass = os.getenv("DB_NAME_CANVASS", "canvassData")

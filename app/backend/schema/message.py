@@ -25,7 +25,7 @@ class Message:
             messageId=data.get("messageId"),
             previousMessageId=data.get("previousMessageId"),
             sources=data.get("sources"),
-            user=data.get("user"),
+            user=data.get("userId"),
             time=data.get("time"),
             sender_type=data.get("type"),
         )

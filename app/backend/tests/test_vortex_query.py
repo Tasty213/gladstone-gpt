@@ -1,3 +1,6 @@
+from unittest import mock
+
+from pytest import MonkeyPatch
 from query.vortex_query import VortexQuery
 from langchain.chains import ConversationalRetrievalChain
 from langchain.vectorstores import VectorStore
@@ -37,7 +40,8 @@ def test_get_chat_prompt_template():
 
 
 # Test make_chain method
-def test_make_chain():
+@mock.patch("langchain.llms.OpenAI", autospec=True)
+def test_make_chain(OpenAI):
     chain = VortexQuery.make_chain(
         VortexQuery.get_vector_store(),
         AsyncCallbackHandler(),

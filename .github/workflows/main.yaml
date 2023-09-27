@@ -35,9 +35,10 @@ jobs:
         pip install pytest
     - name: Running pytest
       run: |
-        touch ./app/backend/conftest.py
+        cd ./app/backend
+        touch ./conftest.py
         pytest
-        rm ./app/backend/conftest.py
+        rm ./conftest.py
   build:
     needs: [lint, test]
     runs-on: ubuntu-latest

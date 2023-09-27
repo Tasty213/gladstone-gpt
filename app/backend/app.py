@@ -1,6 +1,7 @@
 from datetime import datetime
 import logging
 import os
+import time
 import boto3
 from uuid import uuid4
 
@@ -35,11 +36,16 @@ with tracer.start_as_current_span("app.startup") as span:
     database_name_canvass = os.getenv("DB_NAME_CANVASS", "canvassData")
     database_name_message = os.getenv("DB_NAME_MESSAGE", "messages")
     canvassDataTable = CanvassData(
-        boto3.resource("dynamodb", region_name=database_region).Table(database_name_canvass)
+        boto3.resource("dynamodb", region_name=database_region).Table(
+            database_name_canvass
+        )
     )
     messageDataTable = MessageData(
-        boto3.resource("dynamodb", region_name=database_region).Table(database_name_message)
+        boto3.resource("dynamodb", region_name=database_region).Table(
+            database_name_message
+        )
     )
+
 
 @tracer.start_as_current_span("app.chat")
 @app.websocket("/chat")
@@ -59,7 +65,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
         # Construct a response
         response_message_id = str(uuid4())
-        response_message_time = int(datetime.now().timestamp())
+        response_message_time = int(time.time() * 1000)
         start_resp = {
             "sender": "bot",
             "messageId": response_message_id,
@@ -113,7 +119,6 @@ async def websocket_endpoint(websocket: WebSocket):
         await websocket.close()
 
 
-
 @tracer.start_as_current_span("app.submit_canvass")
 @app.post("/submit_canvass")
 def submit_canvass(canvass: Canvass):
@@ -142,7 +147,7 @@ FastAPIInstrumentor.instrument_app(app)
 if __name__ == "__main__":
     uvicorn.run(
         app,
-        host="0.0.0.0",
+        host="127.0.0.1",
         port=8000,
         ssl_keyfile="./localhost-key.pem",
         ssl_certfile="./localhost.pem",

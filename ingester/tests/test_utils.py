@@ -2,7 +2,7 @@
 from utils import getattr_or_default
 
 
-class Object(object):
+class Object:
     pass
 
 

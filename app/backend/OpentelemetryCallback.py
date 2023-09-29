@@ -35,7 +35,7 @@ class OpentelemetryCallback(AsyncCallbackHandler):
             },
         )
 
-    def on_chat_model_start(
+    async def on_chat_model_start(
         self,
         serialized: Dict[str, Any],
         messages: List[List[BaseMessage]],

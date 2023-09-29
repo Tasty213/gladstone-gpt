@@ -10,7 +10,6 @@ from langchain.prompts import (
     ChatPromptTemplate,
 )
 from langchain.callbacks.base import AsyncCallbackHandler
-from langchain.callbacks.manager import AsyncCallbackManager
 from settings import COLLECTION_NAME, PERSIST_DIRECTORY, MODEL_NAME
 import os
 import boto3
@@ -93,7 +92,7 @@ class VortexQuery:
     @tracer.start_as_current_span("gladstone.VortexQuery.make_chain")
     def make_chain(
         vector_store: VectorStore,
-        question_handler: AsyncCallbackHandler,
+        otel_handler: AsyncCallbackHandler,
         stream_handler: AsyncCallbackHandler,
         k="4",
         fetch_k="20",
@@ -101,15 +100,17 @@ class VortexQuery:
         temperature="0.7",
     ) -> ConversationalRetrievalChain:
         question_gen_llm = OpenAI(
-            temperature=float(temperature), verbose=True, callbacks=[question_handler]
+            temperature=float(temperature), verbose=True, callbacks=[otel_handler]
         )
         question_generator = LLMChain(
-            llm=question_gen_llm, prompt=CONDENSE_QUESTION_PROMPT
+            llm=question_gen_llm,
+            prompt=CONDENSE_QUESTION_PROMPT,
+            callbacks=[otel_handler],
         )
 
         streaming_llm = OpenAI(
             streaming=True,
-            callbacks=[stream_handler],
+            callbacks=[stream_handler, otel_handler],
             verbose=True,
             temperature=float(temperature),
         )
@@ -117,6 +118,7 @@ class VortexQuery:
             streaming_llm,
             chain_type="stuff",
             prompt=VortexQuery.get_chat_prompt_template(),
+            callbacks=[otel_handler],
         )
 
         qa = ConversationalRetrievalChain(
@@ -131,6 +133,7 @@ class VortexQuery:
             combine_docs_chain=doc_chain,
             question_generator=question_generator,
             return_source_documents=True,
+            callbacks=[otel_handler],
         )
 
         return qa

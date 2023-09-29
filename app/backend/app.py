@@ -3,22 +3,20 @@ import os
 import time
 import boto3
 from uuid import uuid4
-
 import botocore.exceptions
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 from opentelemetry import trace
-
+from OpentelemetryCallback import OpentelemetryCallback
 from schema.canvass import Canvass
 from schema.message import Message
 from schema.api_question import ApiQuestion
 from messageData import MessageData
 from canvassData import CanvassData
 from query.vortex_query import VortexQuery
-from callback import QuestionCallback, AnswerCallback
+from callback import AnswerCallback
 from observability import start_opentelemetry
-
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 
 start_opentelemetry.startup()
@@ -50,11 +48,11 @@ with tracer.start_as_current_span("app.startup") as span:
 @app.websocket("/chat")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
-    question_handler = QuestionCallback(websocket, messageDataTable)
     stream_handler = AnswerCallback(websocket)
+    otel_handler = OpentelemetryCallback()
     qa_chain = VortexQuery.make_chain(
         vector_store,
-        question_handler,
+        otel_handler,
         stream_handler,
         os.getenv("k", "4"),
         os.getenv("fetch_k", "20"),

@@ -6,47 +6,52 @@ on:
   workflow_dispatch: 
 
 jobs:
-  lint: 
+  pylint:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        directory: ["./ingester", "./app", "./scraper"]
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.11"
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pylint pytest
-        pip install -r app/requirements.txt
-        pip install -r ingester/requirements.txt
-        pip install -r scraper/requirements.txt
-    - name: Analysing the code with pylint
-      run: |
-        pylint $(git ls-files '*.py')
-  test: 
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        working-directory: ${{ matrix.directory }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint pytest
+          pip install -r requirements.txt
+      - name: Analysing the code with pylint
+        working-directory: ${{ matrix.directory }}
+        run: |
+          pylint $(git ls-files '*.py')
+  pytest:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        directory: ["./ingester", "./app/backend", "./scraper"]
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.11"
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pytest
-        pip install -r app/requirements.txt
-        pip install -r ingester/requirements.txt
-        pip install -r scraper/requirements.txt
-    - name: Running pytest for app
-      working-directory: ./app/backend
-      run: |
-        touch ./conftest.py
-        pytest
-        rm ./conftest.py
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        working-directory: ${{ matrix.directory }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+          pip install -r requirements.txt
+      - name: Testing with pytest
+        working-directory: ${{ matrix.directory }}
+        run: |
+          touch ./conftest.py
+          pytest
+          rm ./conftest.py
   build:
-    needs: [lint, test]
+    needs: [pylint, pytest]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3

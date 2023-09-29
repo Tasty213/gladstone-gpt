@@ -1,3 +1,6 @@
 mypy_boto3_s3
 pdfplumber
 pypdf
+boto3
+langchain
+tqdm

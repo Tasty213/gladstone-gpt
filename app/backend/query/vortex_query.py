@@ -100,37 +100,23 @@ class VortexQuery:
         lambda_mult="0.5",
         temperature="0.7",
     ) -> ConversationalRetrievalChain:
-        qa_prompt = VortexQuery.get_chat_prompt_template()
-
-        """Create a ChatVectorDBChain for question/answering."""
-        # Construct a ChatVectorDBChain with a streaming llm for combine docs
-        # and a separate, non-streaming llm for question generation
-        manager = AsyncCallbackManager([])
-        question_manager = AsyncCallbackManager([question_handler])
-        stream_manager = AsyncCallbackManager([stream_handler])
-
         question_gen_llm = OpenAI(
-            temperature=float(temperature),
-            verbose=True,
-            callback_manager=question_manager,
+            temperature=float(temperature), verbose=True, callbacks=[question_handler]
         )
+        question_generator = LLMChain(
+            llm=question_gen_llm, prompt=CONDENSE_QUESTION_PROMPT
+        )
+
         streaming_llm = OpenAI(
             streaming=True,
-            callback_manager=stream_manager,
+            callbacks=[stream_handler],
             verbose=True,
             temperature=float(temperature),
-        )
-
-        question_generator = LLMChain(
-            llm=question_gen_llm,
-            prompt=CONDENSE_QUESTION_PROMPT,
-            callback_manager=manager,
         )
         doc_chain = load_qa_chain(
             streaming_llm,
             chain_type="stuff",
-            prompt=qa_prompt,
-            callback_manager=manager,
+            prompt=VortexQuery.get_chat_prompt_template(),
         )
 
         qa = ConversationalRetrievalChain(
@@ -144,7 +130,7 @@ class VortexQuery:
             ),
             combine_docs_chain=doc_chain,
             question_generator=question_generator,
-            callback_manager=manager,
             return_source_documents=True,
         )
+
         return qa

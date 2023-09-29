@@ -56,10 +56,10 @@ async def websocket_endpoint(websocket: WebSocket):
         vector_store,
         question_handler,
         stream_handler,
-        os.getenv("k", 4),
-        os.getenv("fetch_k", 20),
-        os.getenv("lambda_mult", 0.5),
-        os.getenv("temperature", 0.7),
+        os.getenv("k", "4"),
+        os.getenv("fetch_k", "20"),
+        os.getenv("lambda_mult", "0.5"),
+        os.getenv("temperature", "0.7"),
     )
 
     try:

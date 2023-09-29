@@ -95,10 +95,10 @@ class VortexQuery:
         vector_store: VectorStore,
         question_handler: AsyncCallbackHandler,
         stream_handler: AsyncCallbackHandler,
-        k=4,
-        fetch_k=20,
-        lambda_mult=0.5,
-        temperature=0.7,
+        k="4",
+        fetch_k="20",
+        lambda_mult="0.5",
+        temperature="0.7",
     ) -> ConversationalRetrievalChain:
         qa_prompt = VortexQuery.get_chat_prompt_template()
 
@@ -110,7 +110,7 @@ class VortexQuery:
         stream_manager = AsyncCallbackManager([stream_handler])
 
         question_gen_llm = OpenAI(
-            temperature=temperature,
+            temperature=float(temperature),
             verbose=True,
             callback_manager=question_manager,
         )
@@ -118,7 +118,7 @@ class VortexQuery:
             streaming=True,
             callback_manager=stream_manager,
             verbose=True,
-            temperature=temperature,
+            temperature=float(temperature),
         )
 
         question_generator = LLMChain(
@@ -136,7 +136,11 @@ class VortexQuery:
         qa = ConversationalRetrievalChain(
             retriever=vector_store.as_retriever(
                 search_type="mmr",
-                search_kwargs={"k": k, "fetch_k": fetch_k, "lambda_mult": lambda_mult},
+                search_kwargs={
+                    "k": int(k),
+                    "fetch_k": int(fetch_k),
+                    "lambda_mult": float(lambda_mult),
+                },
             ),
             combine_docs_chain=doc_chain,
             question_generator=question_generator,

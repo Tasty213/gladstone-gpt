@@ -4,7 +4,7 @@ WORKDIR /app
 COPY . /app
 
 RUN ls
-RUN pip install --no-cache-dir -r /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/backend/requirements.txt
 
 RUN useradd -m myuser
 USER myuser

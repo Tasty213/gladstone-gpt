@@ -4,11 +4,12 @@ import time
 import boto3
 from uuid import uuid4
 import botocore.exceptions
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 from opentelemetry import trace
 from OpentelemetryCallback import OpentelemetryCallback
+from captcha import captcha_check
 from schema.canvass import Canvass
 from schema.message import Message
 from schema.api_question import ApiQuestion
@@ -63,6 +64,7 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         # Receive and send back the client message
         question = await websocket.receive_json()
+        captcha_check(question.get("captcha"), websocket.client)
         chat_history: list[Message]
         chat_history = ApiQuestion.from_list(question).message_history
 
@@ -126,8 +128,9 @@ async def websocket_endpoint(websocket: WebSocket):
 
 @tracer.start_as_current_span("app.submit_canvass")
 @app.post("/submit_canvass")
-def submit_canvass(canvass: Canvass):
+def submit_canvass(canvass: Canvass, request: Request):
     try:
+        captcha_check(canvass.captcha, request.client)
         canvassDataTable.add_canvass(
             canvass.userId,
             canvass.firstName,

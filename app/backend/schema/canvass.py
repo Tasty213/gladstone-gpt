@@ -9,3 +9,4 @@ class Canvass(BaseModel):
     email: str
     voterIntent: str
     time: int
+    captcha: str

@@ -1,3 +1,8 @@
+type ChatRequest = {
+  messages: MessageData[];
+  cpatcha: string | null;
+};
+
 type MessageData = {
   type: string;
   content: string;
@@ -57,4 +62,5 @@ export {
   ErrorMessage,
   StreamMessage,
   SourceSet,
+  ChatRequest,
 };

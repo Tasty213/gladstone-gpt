@@ -16,7 +16,7 @@ function CanvassForm({ setCompleted, setUserId }: CanvassFormProps) {
     <form
       className="user-input-form"
       onSubmit={(e) =>
-        submitForm(
+        doCaptchaThenSubmitForm(
           e,
           setCompleted,
           setUserId,
@@ -80,7 +80,7 @@ function CanvassForm({ setCompleted, setUserId }: CanvassFormProps) {
   );
 }
 
-function submitForm(
+function doCaptchaThenSubmitForm(
   event: React.FormEvent<HTMLFormElement>,
   setCompleted: React.Dispatch<React.SetStateAction<boolean>>,
   setUserId: React.Dispatch<React.SetStateAction<string>>,
@@ -91,10 +91,39 @@ function submitForm(
   voterIntent: string
 ) {
   event.preventDefault();
+  window.grecaptcha.ready(() => {
+    window.grecaptcha
+      .execute("6LftMhQoAAAAAPhghGEe6eUxV4QhUnaG4Vyxg5mf", { action: "submit" })
+      .then((token: string) => {
+        submitForm(
+          setCompleted,
+          setUserId,
+          token,
+          firstName,
+          lastName,
+          postcode,
+          email,
+          voterIntent
+        );
+      });
+  });
+}
+
+function submitForm(
+  setCompleted: React.Dispatch<React.SetStateAction<boolean>>,
+  setUserId: React.Dispatch<React.SetStateAction<string>>,
+  token: string,
+  firstName: string,
+  lastName: string,
+  postcode: string,
+  email: string,
+  voterIntent: string
+) {
   const userId = crypto.randomUUID();
   setUserId(userId);
 
   const canvassData = {
+    captcha: token,
     userId: userId,
     firstName: firstName,
     lastName: lastName,

@@ -8,17 +8,24 @@ import {
   StreamMessage,
   EndMessage,
   ErrorMessage,
+  ChatRequest,
 } from "./types";
-import { Console } from "console";
 
 type ChatProps = {
   userId: string;
 };
 
+declare global {
+  interface Window {
+    grecaptcha: any;
+  }
+}
+
 function Chat({ userId }: ChatProps) {
   const [text, setText] = useState("");
   const [pastMessages, setMessages] = useState<MessageData[]>([]);
   const [inFlight, setInFlight] = useState(false);
+  const [captcha, setCaptcha] = useState<string | null>(null);
 
   return (
     <div>
@@ -34,7 +41,7 @@ function Chat({ userId }: ChatProps) {
       <form
         className="user-input-form"
         onSubmit={(e) =>
-          sendChatMessage(
+          doCaptchaThenSendChatMessage(
             e,
             text,
             pastMessages,
@@ -66,7 +73,7 @@ function Chat({ userId }: ChatProps) {
   );
 }
 
-function sendChatMessage(
+function doCaptchaThenSendChatMessage(
   event: React.FormEvent<HTMLFormElement>,
   text: string,
   pastMessages: MessageData[],
@@ -76,7 +83,32 @@ function sendChatMessage(
   setText: React.Dispatch<React.SetStateAction<string>>
 ) {
   event.preventDefault();
+  window.grecaptcha.ready(() => {
+    window.grecaptcha
+      .execute("6LftMhQoAAAAAPhghGEe6eUxV4QhUnaG4Vyxg5mf", { action: "submit" })
+      .then((token: string) => {
+        sendChatMessage(
+          text,
+          pastMessages,
+          userId,
+          token,
+          setMessages,
+          setInFlight,
+          setText
+        );
+      });
+  });
+}
 
+function sendChatMessage(
+  text: string,
+  pastMessages: MessageData[],
+  userId: string,
+  token: string | null,
+  setMessages: React.Dispatch<React.SetStateAction<MessageData[]>>,
+  setInFlight: React.Dispatch<React.SetStateAction<boolean>>,
+  setText: React.Dispatch<React.SetStateAction<string>>
+) {
   setInFlight(true);
   setText("");
 
@@ -99,11 +131,11 @@ function sendChatMessage(
   ];
   setMessages(messages);
 
-  // Send the user message to the server
+  var chatRequest = { messages: messages, captcha: token };
 
   const chatSocket = new WebSocket(`wss://${document.location.host}/chat`);
   chatSocket.onopen = (event) => {
-    chatSocket.send(JSON.stringify(messages));
+    chatSocket.send(JSON.stringify(chatRequest));
   };
   chatSocket.onmessage = (event) => {
     const message: BaseMessage = JSON.parse(event.data);

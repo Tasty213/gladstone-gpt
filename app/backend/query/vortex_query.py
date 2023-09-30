@@ -65,18 +65,20 @@ class VortexQuery:
         )
 
     @staticmethod
-    def get_system_prompt() -> str:
+    def get_system_prompt(local_party_details: str) -> str:
         with open("./query/system_prompt.txt", "r") as system_prompt_file:
             general_system_template = "\n".join(system_prompt_file.readlines())
-        return general_system_template
+        return general_system_template.replace(
+            "LOCAL_PARTY_DETAILS_PLACEHOLDER", local_party_details
+        )
 
     @staticmethod
     def get_user_prompt() -> str:
         return "Question:```{question}```"
 
     @staticmethod
-    def get_chat_prompt_template() -> ChatPromptTemplate:
-        system = VortexQuery.get_system_prompt()
+    def get_chat_prompt_template(local_party_details) -> ChatPromptTemplate:
+        system = VortexQuery.get_system_prompt(local_party_details)
         user = VortexQuery.get_user_prompt()
         messages = [
             SystemMessagePromptTemplate.from_template(system),
@@ -94,6 +96,7 @@ class VortexQuery:
         vector_store: VectorStore,
         otel_handler: AsyncCallbackHandler,
         stream_handler: AsyncCallbackHandler,
+        local_party_details: str,
         k="4",
         fetch_k="20",
         lambda_mult="0.5",
@@ -117,7 +120,7 @@ class VortexQuery:
         doc_chain = load_qa_chain(
             streaming_llm,
             chain_type="stuff",
-            prompt=VortexQuery.get_chat_prompt_template(),
+            prompt=VortexQuery.get_chat_prompt_template(local_party_details),
             callbacks=[otel_handler],
         )
 

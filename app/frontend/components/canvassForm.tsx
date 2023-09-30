@@ -3,9 +3,14 @@ import React, { useState } from "react";
 type CanvassFormProps = {
   setCompleted: React.Dispatch<React.SetStateAction<boolean>>;
   setUserId: React.Dispatch<React.SetStateAction<string>>;
+  setLocalPartyDetails: React.Dispatch<React.SetStateAction<string>>;
 };
 
-function CanvassForm({ setCompleted, setUserId }: CanvassFormProps) {
+function CanvassForm({
+  setCompleted,
+  setUserId,
+  setLocalPartyDetails,
+}: CanvassFormProps) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [postCode, setPostCode] = useState("");
@@ -20,6 +25,7 @@ function CanvassForm({ setCompleted, setUserId }: CanvassFormProps) {
           e,
           setCompleted,
           setUserId,
+          setLocalPartyDetails,
           firstName,
           lastName,
           postCode,
@@ -84,6 +90,7 @@ function doCaptchaThenSubmitForm(
   event: React.FormEvent<HTMLFormElement>,
   setCompleted: React.Dispatch<React.SetStateAction<boolean>>,
   setUserId: React.Dispatch<React.SetStateAction<string>>,
+  setLocalPartyDetails: React.Dispatch<React.SetStateAction<string>>,
   firstName: string,
   lastName: string,
   postcode: string,
@@ -98,6 +105,7 @@ function doCaptchaThenSubmitForm(
         submitForm(
           setCompleted,
           setUserId,
+          setLocalPartyDetails,
           token,
           firstName,
           lastName,
@@ -112,6 +120,7 @@ function doCaptchaThenSubmitForm(
 function submitForm(
   setCompleted: React.Dispatch<React.SetStateAction<boolean>>,
   setUserId: React.Dispatch<React.SetStateAction<string>>,
+  setLocalPartyDetails: React.Dispatch<React.SetStateAction<string>>,
   token: string,
   firstName: string,
   lastName: string,
@@ -139,7 +148,14 @@ function submitForm(
       "Content-Type": "application/json",
     },
     body: JSON.stringify(canvassData),
-  });
+  })
+    .then((response) => {
+      if (!response.ok) throw new Error(response.statusText);
+      else return response.json();
+    })
+    .then((data) => {
+      setLocalPartyDetails(data.local_party_details);
+    });
 
   setCompleted(true);
 }

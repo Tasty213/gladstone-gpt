@@ -12,6 +12,9 @@ POSTCODE_NOT_FOUND_CSS_SELECTOR = "h2.text-red-600"
 
 
 def get_local_party_details(postcode: str):
+    if postcode == "":
+        return DEFAULT_DETAILS
+
     response = get(
         "https://www.libdems.org.uk/in-your-community", params={"postcode": postcode}
     )
@@ -23,8 +26,12 @@ def get_local_party_details(postcode: str):
     if len(soup.select(POSTCODE_NOT_FOUND_CSS_SELECTOR)) > 0:
         return DEFAULT_DETAILS
 
-    details = "".join([result.text for result in soup.select(LOCAL_PARTY_DETAILS_CSS_SELECTOR)])
+    details = "".join(
+        [result.text for result in soup.select(LOCAL_PARTY_DETAILS_CSS_SELECTOR)]
+    )
 
-    details_stripped = re.sub(r'(\s{2,})', "\n", details)
+    details_stripped = re.sub(r"(\s{2,})", "\n", details)
 
-    return re.sub(r'Local party area.+', "", details_stripped, flags=re.MULTILINE | re.DOTALL)
+    return re.sub(
+        r"Local party area.+", "", details_stripped, flags=re.MULTILINE | re.DOTALL
+    )

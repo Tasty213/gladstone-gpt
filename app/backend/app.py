@@ -10,6 +10,7 @@ import uvicorn
 from opentelemetry import trace
 from OpentelemetryCallback import OpentelemetryCallback
 from captcha import captcha_check
+from get_local_party_details import get_local_party_details
 from schema.canvass import Canvass
 from schema.message import Message
 from schema.api_question import ApiQuestion
@@ -49,22 +50,24 @@ with tracer.start_as_current_span("app.startup") as span:
 @app.websocket("/chat")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
-    stream_handler = AnswerCallback(websocket)
-    otel_handler = OpentelemetryCallback()
-    qa_chain = VortexQuery.make_chain(
-        vector_store,
-        otel_handler,
-        stream_handler,
-        os.getenv("k", "4"),
-        os.getenv("fetch_k", "20"),
-        os.getenv("lambda_mult", "0.5"),
-        os.getenv("temperature", "0.7"),
-    )
-
     try:
         # Receive and send back the client message
         question = await websocket.receive_json()
         captcha_check(question.get("captcha"), websocket.client)
+
+        stream_handler = AnswerCallback(websocket)
+        otel_handler = OpentelemetryCallback()
+        qa_chain = VortexQuery.make_chain(
+            vector_store,
+            otel_handler,
+            stream_handler,
+            question.get("local_party_details"),
+            os.getenv("k", "4"),
+            os.getenv("fetch_k", "20"),
+            os.getenv("lambda_mult", "0.5"),
+            os.getenv("temperature", "0.7"),
+        )
+
         chat_history: list[Message]
         chat_history = ApiQuestion.from_list(question.get("messages")).message_history
 
@@ -130,6 +133,8 @@ async def websocket_endpoint(websocket: WebSocket):
 @app.post("/submit_canvass")
 def submit_canvass(canvass: Canvass, request: Request):
     try:
+        local_party_details = get_local_party_details(canvass.postcode)
+
         captcha_check(canvass.captcha, request.client)
         canvassDataTable.add_canvass(
             canvass.userId,
@@ -140,7 +145,7 @@ def submit_canvass(canvass: Canvass, request: Request):
             canvass.voterIntent,
             canvass.time,
         )
-        return {"status": "SUCCESS"}
+        return {"status": "SUCCESS", "local_party_details": local_party_details}
 
     except Exception as e:
         if app.debug:

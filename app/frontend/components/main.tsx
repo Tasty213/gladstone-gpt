@@ -5,6 +5,7 @@ import CanvassForm from "./canvassForm";
 const Main = () => {
   const [canvassComplete, setCanvassComplete] = useState(false);
   const [userId, setUserId] = useState("");
+  const [localPartyDetails, setLocalPartyDetails] = useState("");
 
   const handleLoaded = (_: any) => {
     window.grecaptcha.ready((_: any) => {
@@ -26,9 +27,13 @@ const Main = () => {
   return (
     <div id="chat-container">
       {canvassComplete ? (
-        <Chat userId={userId} />
+        <Chat userId={userId} localPartyDetails={localPartyDetails} />
       ) : (
-        <CanvassForm setCompleted={setCanvassComplete} setUserId={setUserId} />
+        <CanvassForm
+          setCompleted={setCanvassComplete}
+          setUserId={setUserId}
+          setLocalPartyDetails={setLocalPartyDetails}
+        />
       )}
     </div>
   );

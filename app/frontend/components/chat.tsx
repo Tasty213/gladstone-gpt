@@ -13,6 +13,7 @@ import {
 
 type ChatProps = {
   userId: string;
+  localPartyDetails: string;
 };
 
 declare global {
@@ -21,11 +22,10 @@ declare global {
   }
 }
 
-function Chat({ userId }: ChatProps) {
+function Chat({ userId, localPartyDetails }: ChatProps) {
   const [text, setText] = useState("");
   const [pastMessages, setMessages] = useState<MessageData[]>([]);
   const [inFlight, setInFlight] = useState(false);
-  const [captcha, setCaptcha] = useState<string | null>(null);
 
   return (
     <div>
@@ -46,6 +46,7 @@ function Chat({ userId }: ChatProps) {
             text,
             pastMessages,
             userId,
+            localPartyDetails,
             setMessages,
             setInFlight,
             setText
@@ -78,6 +79,7 @@ function doCaptchaThenSendChatMessage(
   text: string,
   pastMessages: MessageData[],
   userId: string,
+  localPartyDetails: string,
   setMessages: React.Dispatch<React.SetStateAction<MessageData[]>>,
   setInFlight: React.Dispatch<React.SetStateAction<boolean>>,
   setText: React.Dispatch<React.SetStateAction<string>>
@@ -92,6 +94,7 @@ function doCaptchaThenSendChatMessage(
           pastMessages,
           userId,
           token,
+          localPartyDetails,
           setMessages,
           setInFlight,
           setText
@@ -105,6 +108,7 @@ function sendChatMessage(
   pastMessages: MessageData[],
   userId: string,
   token: string | null,
+  localPartyDetails: string,
   setMessages: React.Dispatch<React.SetStateAction<MessageData[]>>,
   setInFlight: React.Dispatch<React.SetStateAction<boolean>>,
   setText: React.Dispatch<React.SetStateAction<string>>
@@ -131,7 +135,11 @@ function sendChatMessage(
   ];
   setMessages(messages);
 
-  var chatRequest = { messages: messages, captcha: token };
+  var chatRequest = {
+    messages: messages,
+    captcha: token,
+    local_party_details: localPartyDetails,
+  };
 
   const chatSocket = new WebSocket(`wss://${document.location.host}/chat`);
   chatSocket.onopen = (event) => {

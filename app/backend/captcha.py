@@ -4,13 +4,13 @@ from fastapi.datastructures import Address
 from requests import post
 from opentelemetry import trace
 
-site_secret = os.getenv("RECHAPTCHA_SITE_SECRET")
+site_secret_default = os.getenv("RECHAPTCHA_SITE_SECRET")
 
 
 def captcha_check(
     captcha_token: str,
     remote_ip: Address,
-    site_secret: str = site_secret,
+    site_secret: str = site_secret_default,
     raise_on_fail=True,
 ) -> bool:
     response = post(

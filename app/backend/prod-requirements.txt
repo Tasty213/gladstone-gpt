@@ -7,11 +7,6 @@ botocore
 opentelemetry-api
 opentelemetry-sdk
 opentelemetry-exporter-otlp
-opentelemetry-distro
-opentelemetry-instrumentation-logging
-opentelemetry-instrumentation-boto3sqs
-opentelemetry-instrumentation-botocore
-opentelemetry-instrumentation-fastapi
 chromadb
 tiktoken
 gunicorn

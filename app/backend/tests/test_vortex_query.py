@@ -7,7 +7,7 @@ def test_download_data():
 
 
 def test_get_system_prompt():
-    system_prompt = VortexQuery.get_system_prompt()
+    system_prompt = VortexQuery.get_system_prompt("")
     assert isinstance(system_prompt, str)
 
 
@@ -17,5 +17,5 @@ def test_get_user_prompt():
 
 
 def test_get_chat_prompt_template():
-    chat_prompt_template = VortexQuery.get_chat_prompt_template()
+    chat_prompt_template = VortexQuery.get_chat_prompt_template("")
     assert isinstance(chat_prompt_template, ChatPromptTemplate)

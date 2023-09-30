@@ -12,3 +12,4 @@ opentelemetry-distro
 chromadb
 tiktoken
 gunicorn
+beautifulsoup4

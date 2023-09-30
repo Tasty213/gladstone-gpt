@@ -66,7 +66,7 @@ async def websocket_endpoint(websocket: WebSocket):
         question = await websocket.receive_json()
         captcha_check(question.get("captcha"), websocket.client)
         chat_history: list[Message]
-        chat_history = ApiQuestion.from_list(question).message_history
+        chat_history = ApiQuestion.from_list(question.get("messages")).message_history
 
         messageDataTable.add_message(chat_history[-1])
 

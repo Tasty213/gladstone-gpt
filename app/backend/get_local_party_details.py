@@ -23,7 +23,7 @@ def get_local_party_details(postcode: str):
     if response.status_code > 299:
         return DEFAULT_DETAILS
 
-    soup = BeautifulSoup(response.content)
+    soup = BeautifulSoup(response.content, features="html.parser")
 
     if len(soup.select(POSTCODE_NOT_FOUND_CSS_SELECTOR)) > 0:
         return DEFAULT_DETAILS

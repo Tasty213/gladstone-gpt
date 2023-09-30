@@ -20,6 +20,7 @@ def captcha_check(
             "response": captcha_token,
             "remoteip": remote_ip.host,
         },
+        timeout=10,
     ).json()
 
     success = response.get("success")

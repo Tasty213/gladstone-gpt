@@ -11,6 +11,16 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "cwd": "${fileDirname}",
+            "args": [],
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Web app",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/app/backend/app.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/app/backend/",
             "args": [
                 "--reload"
             ],

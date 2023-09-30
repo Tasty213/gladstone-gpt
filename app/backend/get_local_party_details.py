@@ -4,7 +4,7 @@ from requests import get
 from bs4 import BeautifulSoup
 
 
-DEFAULT_DETAILS = """Unable to identify details of local liberal democrats. 
+DEFAULT_DETAILS = """Unable to identify details of local liberal democrats.
 Federal party can be contacted by filling out the form at https://www.libdems.org.uk/contact"""
 
 LOCAL_PARTY_DETAILS_CSS_SELECTOR = "div.sub-block:nth-child(1)"
@@ -16,7 +16,9 @@ def get_local_party_details(postcode: str):
         return DEFAULT_DETAILS
 
     response = get(
-        "https://www.libdems.org.uk/in-your-community", params={"postcode": postcode}
+        "https://www.libdems.org.uk/in-your-community",
+        params={"postcode": postcode},
+        timeout=1,
     )
     if response.status_code > 299:
         return DEFAULT_DETAILS

@@ -12,8 +12,6 @@ from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
 from opentelemetry import trace
-from opentelemetry.instrumentation.boto3sqs import Boto3SQSInstrumentor
-from opentelemetry.instrumentation.botocore import BotocoreInstrumentor
 import logging
 
 from observability.heroku_detector import HerokuResourceDetector
@@ -44,9 +42,4 @@ def startup() -> None:
     _logs.set_logger_provider(logger_provider)
 
     logging.getLogger().addHandler(LoggingHandler(logger_provider=logger_provider))
-
-
-def auto_instrumentors():
-    Boto3SQSInstrumentor().instrument()
-    BotocoreInstrumentor().instrument()
 

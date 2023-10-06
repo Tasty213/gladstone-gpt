@@ -1,57 +1,39 @@
-# Harnessing the Vortex: Building a Document-Based Q&A System Using OpenAI and Python
+# Gladstone-GPT
+## The unofficial Liberal Democrat chatbot
+With access to all Liberal Democrat policy since 2019 including blog posts from the federal party website, Gladstone can answer most questions about what the Lib Dems would do in government.
 
-## Leveraging the Power of Large Language Models and the Langchain Framework for an Innovative Approach to Document Querying
+Technologies/Tools/Libraries used:
+* Scrapy to mine party policy from the website
+* ChromaDB to store and index its database of documents
+* Langchain to interface with OpenAI's Chat-GPT-3.5-turbo
+* React to provide a Web UI
+* Google ReCaptcha to prevent bot's spamming it
+* AWS dynamo DB for storing user data
+* Heroku for hosting
+* NewRelic to interpret OpenTelementry tracing and metrics data
 
-![DocuVortex](/vortex.png "DocuVortex")
+## How does it work?
 
+1. A user fills out a canvass analysis form which is stored in an AWS database.
+2. This data is used to look up the local party information and provided to the chatbot.
+3. The user submits a question which is sent to the server alongside the local party info for answer generation.
+4. The question is encoded into a collection of numbers that represent the question's contextual meaning, for instance, the word bank in "bank left" and "rob a bank" have different contextual meanings so get assigned different numbers.
+5. A database of pre-collected documents that detail the party's policy position is searched using the Maximal Marginal Relevance (MMR) algorithm, returning a selection of documents that most closely match the question asked whilst aiming to ensure the greatest variety.
+6. The original question, system prompt and returned documents are submitted to GPT-3.5-turbo for response generation.
+7. WebSocket messages are used to stream the response back as it's generated ensuring the user gets a quick response.
 
-This project aims to implement a document-based question-answering system using the power of OpenAI's GPT-3.5 Turbo model, Python, and the Langchain Framework. It processes PDF documents, breaking them into ingestible chunks, and then stores these chunks into a Chroma DB vector database for querying. It complements a Medium article called [Howto Build a Document-Based Q&A System Using OpenAI and Python](https://medium.com/itnext/how-to-build-a-document-based-q-a-system-using-openai-and-python-17d1c3cc2081).
+## Why did you make this?
 
-## Getting Started
+1. I wanted to learn more about how AI works.
+2. I'm a Liberal Democrat.
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+## It said the Lib Dems think XYZ and it's wrong
 
-### Prerequisites
-
-To install the project, you need to have [Python](https://www.python.org/downloads/) installed on your machine.
-
-### Installing
-
-The project uses [Poetry](https://python-poetry.org/) for managing dependencies. After cloning the repository, navigate to the project directory and install dependencies with the following commands:
-
-```bash
-poetry install
-poetry shell
-```
-
-## Running the Application
-Before you can run ingesting or querying you have to make sure that a .env file exists. This file should have a single line that read ```OPENAI_API_KEY=yourkey```
-
-### Ingesting Documents
-To ingest documents, place your PDF files in the 'docs' folder make sure that you are in the app folder and run the following command:
-
-```bash
-cd app
-python ingest.py
-```
-
-### Querying Documents
-To query the ingested documents, make sure that you are in the app folder, run the following command and follow the interactive prompts:
-
-```bash
-cd app
-python query.py
-```
-
-### Running the Streamlit App
-To visualize and interact with the system via the Streamlit app, run the following command:
-
-```bash
-streamlit run streamlit_app.py
-```
+1. Please read the disclaimer at the top of the page when you open it.
+2. Raise an issue and I'll see if there are any extra documents that I can add to make it better.
 
 ### Authors
-[Patrick Kalkman](https://github.com/PatrickKalkman)
+[George Sykes](https://github.com/Tasty213)
 
 ### License
 This project is licensed under the MIT license - see the LICENSE.md file for details
@@ -60,6 +42,6 @@ This project is licensed under the MIT license - see the LICENSE.md file for det
 - [Langchain Framework](https://python.langchain.com/en/latest/index.html)
 - [OpenAI](https://openai.com/)
 - [Chroma DB](https://www.trychroma.com/)
-- [Streamlit](https://streamlit.io/)
+- [Patrick Kalkman](https://github.com/PatrickKalkman) who's [original project](https://github.com/PatrickKalkman/python-docuvortex) I shamelessly forked.
 
 

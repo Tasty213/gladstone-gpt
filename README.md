@@ -35,13 +35,13 @@ Technologies/Tools/Libraries used:
 1. Please read the disclaimer at the top of the page when you open it.
 2. Raise an issue and I'll see if there are any extra documents that I can add to make it better.
 
-### Authors
+## Authors
 [George Sykes](https://github.com/Tasty213)
 
-### License
+## License
 This project is licensed under the MIT license - see the LICENSE.md file for details
 
-### Acknowledgments
+## Acknowledgments
 - [Langchain Framework](https://python.langchain.com/en/latest/index.html)
 - [OpenAI](https://openai.com/)
 - [Chroma DB](https://www.trychroma.com/)

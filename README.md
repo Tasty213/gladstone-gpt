@@ -1,4 +1,4 @@
-# Gladstone-GPT
+# [Gladstone-GPT](https://gladstone-gpt-87ede1bc199a.herokuapp.com/)
 ## The unofficial Liberal Democrat chatbot
 With access to all Liberal Democrat policy since 2019 including blog posts from the federal party website, Gladstone can answer most questions about what the Lib Dems would do in government.
 
@@ -11,6 +11,9 @@ Technologies/Tools/Libraries used:
 * AWS dynamo DB for storing user data
 * Heroku for hosting
 * NewRelic to interpret OpenTelementry tracing and metrics data
+
+### Try it out!
+[Try our Gladstone GPT](https://gladstone-gpt-87ede1bc199a.herokuapp.com/)
 
 ## How does it work?
 

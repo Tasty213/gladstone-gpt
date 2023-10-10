@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import Chat from "./chat";
-import CanvassForm from "./canvassForm";
 
 const Main = () => {
-  const [canvassComplete, setCanvassComplete] = useState(false);
-  const [userId, setUserId] = useState("");
+  const [userId, setUserId] = useState(crypto.randomUUID());
   const [localPartyDetails, setLocalPartyDetails] = useState("");
 
   const handleLoaded = (_: any) => {
@@ -26,15 +24,7 @@ const Main = () => {
 
   return (
     <div id="chat-container">
-      {canvassComplete ? (
-        <Chat userId={userId} localPartyDetails={localPartyDetails} />
-      ) : (
-        <CanvassForm
-          setCompleted={setCanvassComplete}
-          setUserId={setUserId}
-          setLocalPartyDetails={setLocalPartyDetails}
-        />
-      )}
+      <Chat userId={userId} localPartyDetails={localPartyDetails} />
     </div>
   );
 };

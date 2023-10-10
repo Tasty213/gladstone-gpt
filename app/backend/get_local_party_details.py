@@ -11,14 +11,14 @@ LOCAL_PARTY_DETAILS_CSS_SELECTOR = "div.sub-block:nth-child(1)"
 POSTCODE_NOT_FOUND_CSS_SELECTOR = "h2.text-red-600"
 
 
-def get_local_party_details(postcode: str):
+def get_local_party_details(postcode: str, timeout: int = 1):
     if postcode == "":
         return DEFAULT_DETAILS
 
     response = get(
         "https://www.libdems.org.uk/in-your-community",
         params={"postcode": postcode},
-        timeout=1,
+        timeout=timeout,
     )
     if response.status_code > 299:
         return DEFAULT_DETAILS

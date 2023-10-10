@@ -4,3 +4,4 @@ pypdf==3.12.2
 boto3==1.28.57
 langchain==0.0.305
 tqdm==4.66.1
+chromadb==0.4.13

@@ -1,6 +1,6 @@
-mypy_boto3_s3
-pdfplumber
-pypdf
-boto3
-langchain
-tqdm
+mypy_boto3_s3==1.28.57
+pdfplumber==0.10.1
+pypdf==3.12.2
+boto3==1.28.57
+langchain==0.0.305
+tqdm==4.66.1

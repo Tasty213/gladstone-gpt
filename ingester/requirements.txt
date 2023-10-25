@@ -2,6 +2,6 @@ mypy_boto3_s3==1.28.55
 pdfplumber==0.10.1
 pypdf==3.12.2
 boto3==1.28.55
-langchain==0.0.308
+langchain==0.0.317
 tqdm==4.66.1
 chromadb==0.4.13

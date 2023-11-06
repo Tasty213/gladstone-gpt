@@ -67,8 +67,7 @@ class VortexQuery:
 
     @staticmethod
     def get_system_prompt(local_party_details: str) -> str:
-        with open("./query/system_prompt.txt", "r") as system_prompt_file:
-            general_system_template = "\n".join(system_prompt_file.readlines())
+        general_system_template = os.getenv("SYSTEM_PROMPT")
         return general_system_template.replace(
             "LOCAL_PARTY_DETAILS_PLACEHOLDER", local_party_details
         )

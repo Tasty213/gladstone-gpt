@@ -21,6 +21,7 @@ from langchain.llms import OpenAI
 from opentelemetry import trace
 
 tracer = trace.get_tracer("gladstone.vortex_query")
+document_store_bucket = os.getenv("DOCUMENT_STORE_BUCKET", "gladstone-gpt-data")
 
 
 class VortexQuery:
@@ -32,7 +33,7 @@ class VortexQuery:
     @staticmethod
     @tracer.start_as_current_span("gladstone.VortexQuery.download_data")
     def download_data(
-        bucket_name="gladstone-gpt-data",
+        bucket_name=document_store_bucket,
         local_dir=PERSIST_DIRECTORY,
     ):
         """

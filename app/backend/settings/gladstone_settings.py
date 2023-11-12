@@ -8,7 +8,17 @@ class GladstoneSettings:
     system_prompt: str
     collection_name: str = "neonshield-2023-05"
     persist_directory: str = "./query/temp_data/chroma"
+
     model_name: str = "gpt-4"
+    documents_returned: str = "4"
+    documents_considered: str = "20"
+    lambda_mult: str = "0.5"
+    temperature: str = "0.7"
+
+    build_directory: str = "../dist"
+
+    database_region: str
+    database_name_message: str
 
     @classmethod
     def from_yaml(cls, file_name):

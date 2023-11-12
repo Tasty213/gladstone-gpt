@@ -4,19 +4,16 @@ import time
 import boto3
 from uuid import uuid4
 import botocore.exceptions
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 from opentelemetry import trace
 from OpentelemetryCallback import OpentelemetryCallback
 from settings.gladstone_settings import GladstoneSettings
 from captcha import captcha_check
-from get_local_party_details import get_local_party_details
-from schema.canvass import Canvass
 from schema.message import Message
 from schema.api_question import ApiQuestion
 from messageData import MessageData
-from canvassData import CanvassData
 from query.vortex_query import VortexQuery
 from callback import AnswerCallback
 from observability import start_opentelemetry
@@ -30,22 +27,13 @@ with tracer.start_as_current_span("app.startup") as span:
     settings_filepath = os.getenv("SETTINGS_FILEPATH", "./settings/test_settings.yaml")
     settings = GladstoneSettings.from_yaml(settings_filepath)
 
-    build_dir = os.getenv("BUILD_DIR", "../dist")
     app = FastAPI()
 
     vector_store = VortexQuery.get_vector_store(settings)
 
-    database_region = os.getenv("DB_REGION", "eu-north-1")
-    database_name_canvass = os.getenv("DB_NAME_CANVASS", "canvassData")
-    database_name_message = os.getenv("DB_NAME_MESSAGE", "messages")
-    canvassDataTable = CanvassData(
-        boto3.resource("dynamodb", region_name=database_region).Table(
-            database_name_canvass
-        )
-    )
     messageDataTable = MessageData(
-        boto3.resource("dynamodb", region_name=database_region).Table(
-            database_name_message
+        boto3.resource("dynamodb", region_name=settings.database_region).Table(
+            settings.database_name_message
         )
     )
 
@@ -67,10 +55,10 @@ async def websocket_endpoint(websocket: WebSocket):
             stream_handler,
             question.get("local_party_details"),
             settings,
-            os.getenv("k", "4"),
-            os.getenv("fetch_k", "20"),
-            os.getenv("lambda_mult", "0.5"),
-            os.getenv("temperature", "0.7"),
+            settings.documents_returned,
+            settings.documents_considered,
+            settings.lambda_mult,
+            settings.temperature,
         )
 
         chat_history: list[Message]
@@ -134,31 +122,9 @@ async def websocket_endpoint(websocket: WebSocket):
         await websocket.close()
 
 
-@tracer.start_as_current_span("app.submit_canvass")
-@app.post("/submit_canvass")
-def submit_canvass(canvass: Canvass, request: Request):
-    try:
-        local_party_details = get_local_party_details(canvass.postcode)
-
-        captcha_check(canvass.captcha, request.client)
-        canvassDataTable.add_canvass(
-            canvass.userId,
-            canvass.firstName,
-            canvass.lastName,
-            canvass.postcode,
-            canvass.email,
-            canvass.voterIntent,
-            canvass.time,
-        )
-        return {"status": "SUCCESS", "local_party_details": local_party_details}
-
-    except Exception as e:
-        if app.debug:
-            raise e
-        return {"status": "ERROR", "reason": str(e)}
-
-
-app.mount("/", StaticFiles(directory=build_dir, html=True), name="static")
+app.mount(
+    "/", StaticFiles(directory=settings.build_directory, html=True), name="static"
+)
 
 FastAPIInstrumentor.instrument_app(app)
 

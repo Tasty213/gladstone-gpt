@@ -10,3 +10,5 @@ system_prompt: |
     ----
     {context}
     ----
+database_name_message: "paddy-bot"
+database_region: "eu-west-2"

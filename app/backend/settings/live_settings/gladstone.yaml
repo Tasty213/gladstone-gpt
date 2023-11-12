@@ -19,3 +19,5 @@ system_prompt: |
     ----
     {context}
     ----
+database_name_message: "messages"
+database_region: "eu-west-2"

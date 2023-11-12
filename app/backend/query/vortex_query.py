@@ -27,7 +27,7 @@ class VortexQuery:
     @staticmethod
     def download_document_store(settings: GladstoneSettings):
         if not Path(settings.persist_directory).exists():
-            VortexQuery.download_data()
+            VortexQuery.download_data(settings)
 
     @staticmethod
     @tracer.start_as_current_span("gladstone.VortexQuery.download_data")

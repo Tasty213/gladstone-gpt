@@ -12,3 +12,4 @@ system_prompt: |
     ----
 database_name_message: "paddy-bot"
 database_region: "eu-west-2"
+document_store_bucket: "paddy-bot-data"

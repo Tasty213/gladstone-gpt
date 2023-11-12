@@ -19,6 +19,7 @@ class GladstoneSettings:
 
     database_region: str
     database_name_message: str
+    document_store_bucket: str = "gladstone-gpt-data"
 
     @classmethod
     def from_yaml(cls, file_name):

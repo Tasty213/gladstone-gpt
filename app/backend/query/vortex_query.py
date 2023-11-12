@@ -20,7 +20,6 @@ from langchain.llms import OpenAI
 from opentelemetry import trace
 
 tracer = trace.get_tracer("gladstone.vortex_query")
-document_store_bucket = os.getenv("DOCUMENT_STORE_BUCKET", "gladstone-gpt-data")
 
 
 class VortexQuery:
@@ -31,7 +30,7 @@ class VortexQuery:
 
     @staticmethod
     @tracer.start_as_current_span("gladstone.VortexQuery.download_data")
-    def download_data(settings: GladstoneSettings, bucket_name=document_store_bucket):
+    def download_data(settings: GladstoneSettings):
         """
         Download the contents of a folder directory
         Args:
@@ -40,7 +39,7 @@ class VortexQuery:
             local_dir: a relative or absolute directory path in the local file system
         """
         s3 = boto3.resource("s3")
-        bucket = s3.Bucket(bucket_name)
+        bucket = s3.Bucket(settings.document_store_bucket)
         for obj in bucket.objects.filter():
             target = (
                 obj.key

@@ -1,8 +1,8 @@
 import logging
-import os
 
 from botocore.exceptions import ClientError
 from opentelemetry import trace
+from settings.gladstone_settings import GladstoneSettings
 
 from schema.api_question import Message
 
@@ -19,18 +19,15 @@ class MessageData:
         self.table = table
         self.logger = logging.getLogger()
 
-    def add_message(
-        self,
-        question: Message,
-    ):
+    def add_message(self, question: Message, settings: GladstoneSettings):
         with tracer.start_as_current_span(
             "gladstone.MessageData.add_message",
             attributes={
                 "db.system": "dynamodb",
-                "db.name": os.getenv("DB_NAME_MESSAGE"),
+                "db.name": settings.database_name_message,
             },
             kind=trace.SpanKind.CLIENT,
-        ) as span:
+        ):
             try:
                 self.table.put_item(
                     Item={

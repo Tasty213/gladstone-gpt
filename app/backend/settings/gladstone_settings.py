@@ -6,6 +6,9 @@ import yaml
 @dataclass
 class GladstoneSettings:
     system_prompt: str
+    database_region: str
+    database_name_message: str
+
     collection_name: str = "neonshield-2023-05"
     persist_directory: str = "./query/temp_data/chroma"
 
@@ -16,9 +19,6 @@ class GladstoneSettings:
     temperature: str = "0.7"
 
     build_directory: str = "../dist"
-
-    database_region: str
-    database_name_message: str
     document_store_bucket: str = "gladstone-gpt-data"
 
     @classmethod

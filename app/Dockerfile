@@ -2,7 +2,7 @@ FROM python:3.11.4
 
 ARG settings_filepath
 
-ENV SETTINGS_FILEPATH = ${settings_filepath}
+ENV SETTINGS_FILEPATH=${settings_filepath}
 
 WORKDIR /app
 COPY . /app

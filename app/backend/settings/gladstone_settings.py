@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import yaml
 
 
+# pylint: disable=too-many-instance-attributes
 @dataclass
 class GladstoneSettings:
     system_prompt: str

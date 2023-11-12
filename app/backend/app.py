@@ -64,7 +64,7 @@ async def websocket_endpoint(websocket: WebSocket):
         chat_history: list[Message]
         chat_history = ApiQuestion.from_list(question.get("messages")).message_history
 
-        messageDataTable.add_message(chat_history[-1])
+        messageDataTable.add_message(chat_history[-1], settings)
 
         # Construct a response
         response_message_id = str(uuid4())
@@ -107,7 +107,7 @@ async def websocket_endpoint(websocket: WebSocket):
             }
         )
 
-        messageDataTable.add_message(output_message)
+        messageDataTable.add_message(output_message, settings)
     except WebSocketDisconnect:
         logging.info("websocket disconnect")
     except Exception as e:

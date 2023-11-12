@@ -9,6 +9,7 @@ from fastapi.staticfiles import StaticFiles
 import uvicorn
 from opentelemetry import trace
 from OpentelemetryCallback import OpentelemetryCallback
+from settings.gladstone_settings import GladstoneSettings
 from captcha import captcha_check
 from get_local_party_details import get_local_party_details
 from schema.canvass import Canvass
@@ -26,10 +27,13 @@ tracer = trace.get_tracer("gladstone.app")
 
 botocore.session.get_session()
 with tracer.start_as_current_span("app.startup") as span:
+    settings_filepath = os.getenv("SETTINGS_FILEPATH", "./settings/test_settings.yaml")
+    settings = GladstoneSettings.from_yaml(settings_filepath)
+
     build_dir = os.getenv("BUILD_DIR", "../dist")
     app = FastAPI()
 
-    vector_store = VortexQuery.get_vector_store()
+    vector_store = VortexQuery.get_vector_store(settings)
 
     database_region = os.getenv("DB_REGION", "eu-north-1")
     database_name_canvass = os.getenv("DB_NAME_CANVASS", "canvassData")
@@ -62,6 +66,7 @@ async def websocket_endpoint(websocket: WebSocket):
             otel_handler,
             stream_handler,
             question.get("local_party_details"),
+            settings,
             os.getenv("k", "4"),
             os.getenv("fetch_k", "20"),
             os.getenv("lambda_mult", "0.5"),

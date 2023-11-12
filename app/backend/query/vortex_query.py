@@ -1,6 +1,5 @@
 from pathlib import Path
 from langchain.chains import ConversationalRetrievalChain
-from langchain.chat_models import ChatOpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores.chroma import Chroma
 from langchain.vectorstores.base import VectorStore
@@ -10,7 +9,7 @@ from langchain.prompts import (
     ChatPromptTemplate,
 )
 from langchain.callbacks.base import AsyncCallbackHandler
-from settings import COLLECTION_NAME, PERSIST_DIRECTORY, MODEL_NAME
+from settings.gladstone_settings import GladstoneSettings
 import os
 import boto3
 
@@ -26,16 +25,13 @@ document_store_bucket = os.getenv("DOCUMENT_STORE_BUCKET", "gladstone-gpt-data")
 
 class VortexQuery:
     @staticmethod
-    def download_document_store():
-        if not Path(PERSIST_DIRECTORY).exists():
+    def download_document_store(settings: GladstoneSettings):
+        if not Path(settings.persist_directory).exists():
             VortexQuery.download_data()
 
     @staticmethod
     @tracer.start_as_current_span("gladstone.VortexQuery.download_data")
-    def download_data(
-        bucket_name=document_store_bucket,
-        local_dir=PERSIST_DIRECTORY,
-    ):
+    def download_data(settings: GladstoneSettings, bucket_name=document_store_bucket):
         """
         Download the contents of a folder directory
         Args:
@@ -46,7 +42,11 @@ class VortexQuery:
         s3 = boto3.resource("s3")
         bucket = s3.Bucket(bucket_name)
         for obj in bucket.objects.filter():
-            target = obj.key if local_dir is None else os.path.join(local_dir, obj.key)
+            target = (
+                obj.key
+                if settings.persist_directory is None
+                else os.path.join(settings.persist_directory, obj.key)
+            )
             if not os.path.exists(os.path.dirname(target)):
                 os.makedirs(os.path.dirname(target))
             if obj.key[-1] == "/":
@@ -55,20 +55,19 @@ class VortexQuery:
 
     @staticmethod
     @tracer.start_as_current_span("gladstone.VortexQuery.get_vector_store")
-    def get_vector_store() -> VectorStore:
-        VortexQuery.download_document_store()
+    def get_vector_store(settings: GladstoneSettings) -> VectorStore:
+        VortexQuery.download_document_store(settings)
         embedding = OpenAIEmbeddings(client=None)
 
         return Chroma(
-            collection_name=COLLECTION_NAME,
+            collection_name=settings.collection_name,
             embedding_function=embedding,
-            persist_directory=PERSIST_DIRECTORY,
+            persist_directory=settings.persist_directory,
         )
 
     @staticmethod
-    def get_system_prompt(local_party_details: str) -> str:
-        general_system_template = os.getenv("SYSTEM_PROMPT")
-        return general_system_template.replace(
+    def get_system_prompt(local_party_details: str, settings: GladstoneSettings) -> str:
+        return settings.system_prompt.replace(
             "LOCAL_PARTY_DETAILS_PLACEHOLDER", local_party_details
         )
 
@@ -77,18 +76,16 @@ class VortexQuery:
         return "Question:```{question}```"
 
     @staticmethod
-    def get_chat_prompt_template(local_party_details) -> ChatPromptTemplate:
-        system = VortexQuery.get_system_prompt(local_party_details)
+    def get_chat_prompt_template(
+        local_party_details: str, settings: GladstoneSettings
+    ) -> ChatPromptTemplate:
+        system = VortexQuery.get_system_prompt(local_party_details, settings)
         user = VortexQuery.get_user_prompt()
         messages = [
             SystemMessagePromptTemplate.from_template(system),
             HumanMessagePromptTemplate.from_template(user),
         ]
         return ChatPromptTemplate.from_messages(messages)
-
-    BASE_LLM = ChatOpenAI(
-        client=None, model=MODEL_NAME, temperature=0.5, streaming=True, verbose=True
-    )
 
     @staticmethod
     @tracer.start_as_current_span("gladstone.VortexQuery.make_chain")
@@ -97,6 +94,7 @@ class VortexQuery:
         otel_handler: AsyncCallbackHandler,
         stream_handler: AsyncCallbackHandler,
         local_party_details: str,
+        settings: GladstoneSettings,
         k="4",
         fetch_k="20",
         lambda_mult="0.5",
@@ -120,7 +118,7 @@ class VortexQuery:
         doc_chain = load_qa_chain(
             streaming_llm,
             chain_type="stuff",
-            prompt=VortexQuery.get_chat_prompt_template(local_party_details),
+            prompt=VortexQuery.get_chat_prompt_template(local_party_details, settings),
             callbacks=[otel_handler],
         )
 

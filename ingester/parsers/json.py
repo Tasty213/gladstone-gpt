@@ -25,5 +25,5 @@ class JsonParser(BaseParser):
                 return self.load_pure_json(data, metadata)
 
     def load_pure_json(self, data: dict, metadata: dict):
-        text_list = self.clean_text([data.get("content")])
-        return self._docs_builder(text_list, data.get("metadata"))
+        text = self.clean_text([data.get("content")])
+        return self._docs_builder(text, data.get("metadata"))

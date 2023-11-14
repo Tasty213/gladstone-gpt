@@ -17,8 +17,11 @@ class BaseParser:
         self,
         pages: List[str],
         cleaning_functions: List[Callable[[str], str]] = None,
-    ) -> List[str]:
-        """Apply the cleaning functions to the text of each page."""
+    ) -> str:
+        """
+        Apply the cleaning functions to the text of each page. Then combine the
+        result into one long string.
+        """
 
         if cleaning_functions is None:
             cleaning_functions = [
@@ -33,7 +36,7 @@ class BaseParser:
             for cleaning_function in cleaning_functions:
                 text = cleaning_function(text)
             cleaned_pages.append(text)
-        return cleaned_pages
+        return "\n".join(cleaned_pages)
 
     @staticmethod
     def merge_hyphenated_words(text: str) -> str:
@@ -52,29 +55,29 @@ class BaseParser:
 
     def _docs_builder(
         self,
-        text: List[str],
+        text: str,
         metadata_parsed: Dict[str, str],
     ) -> List[docstore.Document]:
         """Split the text into chunks and return them as Documents."""
         doc_chunks: List[docstore.Document] = []
 
-        for page_num, page in enumerate(text):
-            text_splitter = splitter.TokenTextSplitter(
-                chunk_size=250,
-                model_name="gpt-3.5-turbo",
-                chunk_overlap=25,
+        text_splitter = splitter.TokenTextSplitter(
+            chunk_size=250,
+            model_name="gpt-3.5-turbo",
+            chunk_overlap=25,
+        )
+        chunks = text_splitter.split_text(text)
+
+        for i, chunk in enumerate(chunks):
+            chunk_with_date = f"{metadata_parsed.get('date')}\n\n{chunk}"
+            chunk_with_date = chunk_with_date.replace("\n", " ")
+            doc = docstore.Document(
+                page_content=chunk_with_date,
+                metadata={
+                    "page_number": 0,
+                    "chunk": i,
+                    **metadata_parsed,
+                },
             )
-            chunks = text_splitter.split_text(page)
-            for i, chunk in enumerate(chunks):
-                chunk_with_date = f"{metadata_parsed.get('date')}\n\n{chunk}"
-                chunk_with_date = chunk_with_date.replace("\n", " ")
-                doc = docstore.Document(
-                    page_content=chunk_with_date,
-                    metadata={
-                        "page_number": page_num,
-                        "chunk": i,
-                        **metadata_parsed,
-                    },
-                )
-                doc_chunks.append(doc)
+            doc_chunks.append(doc)
         return doc_chunks

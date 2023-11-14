@@ -1,5 +1,4 @@
 from pathlib import Path
-from datetime import date
 from typing import Dict, List, Tuple
 from parsers.base import BaseParser
 import langchain.docstore.document as docstore

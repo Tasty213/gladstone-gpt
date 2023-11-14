@@ -1,5 +1,3 @@
-import os
-
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
@@ -42,4 +40,3 @@ def startup() -> None:
     _logs.set_logger_provider(logger_provider)
 
     logging.getLogger().addHandler(LoggingHandler(logger_provider=logger_provider))
-

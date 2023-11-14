@@ -36,7 +36,10 @@ class VortexIngester:
             embeddings,
             collection_name=COLLECTION_NAME,
             persist_directory=PERSIST_DIRECTORY,
-            ids=[sha256(chunk.page_content) for chunk in chunks],
+            ids=[
+                sha256(chunk.page_content.encode("utf-8")).hexdigest()
+                for chunk in chunks
+            ],
         )
 
         logger.info("Created Chroma vector store")

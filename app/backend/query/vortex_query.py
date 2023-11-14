@@ -16,6 +16,7 @@ import boto3
 from langchain.chains.chat_vector_db.prompts import CONDENSE_QUESTION_PROMPT
 from langchain.chains.llm import LLMChain
 from langchain.chains.question_answering import load_qa_chain
+from langchain.chat_models import ChatOpenAI
 from langchain.llms import OpenAI
 from opentelemetry import trace
 
@@ -108,11 +109,12 @@ class VortexQuery:
             callbacks=[otel_handler],
         )
 
-        streaming_llm = OpenAI(
+        streaming_llm = ChatOpenAI(
             streaming=True,
             callbacks=[stream_handler, otel_handler],
             verbose=True,
             temperature=float(temperature),
+            model="gpt-3.5-turbo-1106",
         )
         doc_chain = load_qa_chain(
             streaming_llm,

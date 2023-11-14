@@ -115,6 +115,7 @@ class VortexQuery:
             verbose=True,
             temperature=float(temperature),
             model="gpt-3.5-turbo-1106",
+            max_tokens=settings.max_tokens,
         )
         doc_chain = load_qa_chain(
             streaming_llm,

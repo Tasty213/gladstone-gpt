@@ -9,6 +9,7 @@ class GladstoneSettings:
     system_prompt: str
     database_region: str
     database_name_message: str
+    max_tokens: int
 
     collection_name: str = "neonshield-2023-05"
     persist_directory: str = "./query/temp_data/chroma"

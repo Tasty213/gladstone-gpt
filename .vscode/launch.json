@@ -30,7 +30,7 @@
             "name": "Python: Run ingester",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/ingester/ingest.py",
+            "program": "${workspaceFolder}/ingester/ingester/ingest.py",
             "console": "integratedTerminal",
             "justMyCode": true
         },

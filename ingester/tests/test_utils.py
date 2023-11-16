@@ -1,5 +1,5 @@
 # test_getattr_or_default.py
-from utils import getattr_or_default
+from ingester.utils import getattr_or_default
 
 
 class Object:

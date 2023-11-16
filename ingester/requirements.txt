@@ -5,3 +5,4 @@ boto3==1.28.55
 langchain==0.0.308
 tqdm==4.66.1
 chromadb==0.4.13
+.

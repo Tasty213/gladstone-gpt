@@ -133,10 +133,16 @@ class OpentelemetryCallback(AsyncCallbackHandler):
             attributes={
                 "gladstone.llms.id": "_".join(serialized.get("id")),
                 "gladstone.llms.run_id": str(run_id),
-                "gladstone.llms.inputs": json.dumps(inputs),
+                "gladstone.llms.question": inputs.get("question", "no question found"),
+                "gladstone.llms.documents": self.get_documents_metadata_from_input(
+                    inputs.get("input_documents", [])
+                ),
                 "gladstone.llms.parent_run_id": str(parent_run_id),
             },
         )
+
+    def get_documents_metadata_from_input(self, documents: List[Document]):
+        return ",".join([document.metadata.get("name") for document in documents])
 
     async def on_chain_end(
         self,

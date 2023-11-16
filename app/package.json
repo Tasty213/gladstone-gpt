@@ -21,7 +21,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-spinners": "^0.13.8",
-    "uninstall": "0.0.0"
+    "uninstall": "0.0.0",
+    "watchdog": "^0.8.17"
   },
   "devDependencies": {
     "@babel/core": "^7.22.9",

@@ -88,8 +88,8 @@ async def websocket_endpoint(websocket: WebSocket):
                     ],
                 }
             )
-            span = trace.get_current_span()
-            span.add_event(
+            current_span = trace.get_current_span()
+            current_span.add_event(
                 "message_complete",
                 {"total_tokens": cb.total_tokens, "total_cost": cb.total_cost},
             )

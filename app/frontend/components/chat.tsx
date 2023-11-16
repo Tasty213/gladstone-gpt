@@ -22,6 +22,11 @@ declare global {
   }
 }
 
+const websocket_error_message = {
+  message:
+    "Very sorry, but I'm really busy answering lots of questions so haven't been able to answer yours. Please try again later when I might be more free.",
+};
+
 function Chat({ userId, localPartyDetails }: ChatProps) {
   const [text, setText] = useState("");
   const [pastMessages, setMessages] = useState<MessageData[]>([]);
@@ -170,6 +175,14 @@ function sendChatMessage(
     }
   };
   chatSocket.onclose = (event) => {
+    setInFlight(false);
+  };
+  chatSocket.onerror = (event) => {
+    process_error_message(
+      websocket_error_message as ErrorMessage,
+      setMessages,
+      messages
+    );
     setInFlight(false);
   };
 }

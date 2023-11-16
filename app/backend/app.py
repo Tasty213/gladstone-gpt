@@ -118,7 +118,8 @@ async def websocket_endpoint(websocket: WebSocket):
     except WebSocketDisconnect:
         logging.info("websocket disconnect")
     except Exception as e:
-        logging.error(e)
+        current_span = trace.get_current_span()
+        current_span.record_exception(e)
         resp = {
             "sender": "bot",
             "message": "Sorry, something went wrong. Try again.",

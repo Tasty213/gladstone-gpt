@@ -8,7 +8,6 @@ import {
   StreamMessage,
   EndMessage,
   ErrorMessage,
-  ChatRequest,
 } from "./types";
 
 type ChatProps = {
@@ -25,7 +24,9 @@ declare global {
 const websocket_error_message = {
   message:
     "Very sorry, but I'm really busy answering lots of questions so haven't been able to answer yours. Please try again later when I might be more free.",
-};
+} as ErrorMessage;
+
+const websocket_timeout_ms = 5 * 1000;
 
 function Chat({ userId, localPartyDetails }: ChatProps) {
   const [text, setText] = useState("");
@@ -146,11 +147,23 @@ function sendChatMessage(
     local_party_details: localPartyDetails,
   };
 
+  function get_watchdog_timer() {
+    return window.setTimeout(function () {
+      process_error_message(websocket_error_message, setMessages, messages);
+      setInFlight(false);
+    }, websocket_timeout_ms);
+  }
+
+  var watchdog = get_watchdog_timer();
+
   const chatSocket = new WebSocket(`wss://${document.location.host}/chat`);
   chatSocket.onopen = (event) => {
     chatSocket.send(JSON.stringify(chatRequest));
   };
+
   chatSocket.onmessage = (event) => {
+    window.clearTimeout(watchdog);
+    watchdog = get_watchdog_timer();
     const message: BaseMessage = JSON.parse(event.data);
     switch (message.type) {
       case "start":
@@ -175,9 +188,11 @@ function sendChatMessage(
     }
   };
   chatSocket.onclose = (event) => {
+    window.clearTimeout(watchdog);
     setInFlight(false);
   };
   chatSocket.onerror = (event) => {
+    window.clearTimeout(watchdog);
     process_error_message(
       websocket_error_message as ErrorMessage,
       setMessages,

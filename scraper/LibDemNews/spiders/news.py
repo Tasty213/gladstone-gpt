@@ -45,7 +45,7 @@ class NewsSpider(scrapy.Spider):
         content = response.xpath(
             "/html/body/div/div[@class='page-layout']//text()"
         ).getall()
-        content = regex.sub("\s+", " ", "\n".join(content))
+        content = regex.sub(r"\s+", " ", "\n".join(content))
         heading = response.xpath("//h1/text()").get()
         return content, heading
 

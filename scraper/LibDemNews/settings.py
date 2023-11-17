@@ -57,11 +57,6 @@ DOWNLOADER_MIDDLEWARES = {
     "scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware": 110,
 }
 
-SMARTPROXY_USER = os.environ.get("SMARTPROXY_USER")  ## Smartproxy Username (Sub-user)
-SMARTPROXY_PASSWORD = os.environ.get("SMARTPROXY_PASSWORD")  ## Password for your user
-SMARTPROXY_ENDPOINT = "gate.smartproxy.com"  ## Endpoint you'd like to use
-SMARTPROXY_PORT = "7000"  ## Port of the endpoint you are using.
-
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
 # EXTENSIONS = {

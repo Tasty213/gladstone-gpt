@@ -9,6 +9,18 @@ import logging as logger
 class BaseParser:
     """A parser for extracting and cleaning text from PDF documents."""
 
+    def __init__(
+        self,
+        chunk_size=250,
+        model_name="gpt-3.5-turbo",
+        chunk_overlap=25,
+        split_document_text=True,
+    ):
+        self.chunk_size = chunk_size
+        self.model_name = model_name
+        self.chunk_overlap = chunk_overlap
+        self.split_document_text = split_document_text
+
     @abstractmethod
     def text_to_docs(self, metadata: Dict[str, str]) -> List[docstore.Document]:
         pass
@@ -32,7 +44,7 @@ class BaseParser:
 
         logger.debug("Cleaning text of each page")
         cleaned_pages = []
-        for page_num, text in enumerate(pages):
+        for text in pages:
             for cleaning_function in cleaning_functions:
                 text = cleaning_function(text)
             cleaned_pages.append(text)
@@ -61,12 +73,15 @@ class BaseParser:
         """Split the text into chunks and return them as Documents."""
         doc_chunks: List[docstore.Document] = []
 
-        text_splitter = splitter.TokenTextSplitter(
-            chunk_size=250,
-            model_name="gpt-3.5-turbo",
-            chunk_overlap=25,
-        )
-        chunks = text_splitter.split_text(text)
+        if self.split_document_text:
+            text_splitter = splitter.TokenTextSplitter(
+                chunk_size=self.chunk_size,
+                model_name=self.model_name,
+                chunk_overlap=self.chunk_overlap,
+            )
+            chunks = text_splitter.split_text(text)
+        else:
+            chunks = [text]
 
         for i, chunk in enumerate(chunks):
             chunk_with_date = f"{metadata_parsed.get('date')}\n\n{chunk}"

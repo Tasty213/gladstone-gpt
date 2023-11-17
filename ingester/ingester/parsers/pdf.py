@@ -12,6 +12,9 @@ from utils import getattr_or_default
 class PdfParser(BaseParser):
     """A parser for extracting and cleaning text from PDF documents."""
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def text_to_docs(
         self, pdf_file_path: Path, metadata: Dict[str, str]
     ) -> List[docstore.Document]:

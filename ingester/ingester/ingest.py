@@ -9,8 +9,8 @@ DRY_RUN = True
 
 
 def main():
-    ingester = VortexIngester("./docs/")
-    ingester.ingest()
+    ingester = VortexIngester("./../../docs_support/")
+    ingester.ingest(split_document_text=False)
 
     if not DRY_RUN:
         client = boto3.resource("s3")

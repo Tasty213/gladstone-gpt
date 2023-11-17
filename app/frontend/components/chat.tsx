@@ -26,7 +26,7 @@ const websocket_error_message = {
     "Very sorry, but I'm really busy answering lots of questions so haven't been able to answer yours. Please try again later when I might be more free.",
 } as ErrorMessage;
 
-const websocket_timeout_ms = 5 * 1000;
+const websocket_timeout_ms = 10 * 1000;
 
 function Chat({ userId, localPartyDetails }: ChatProps) {
   const [text, setText] = useState("");
@@ -149,6 +149,10 @@ function sendChatMessage(
 
   function get_watchdog_timer() {
     return window.setTimeout(function () {
+      chatSocket.close(
+        4001,
+        `No chat message reccieved within ${websocket_timeout_ms} ms`
+      );
       process_error_message(websocket_error_message, setMessages, messages);
       setInFlight(false);
     }, websocket_timeout_ms);

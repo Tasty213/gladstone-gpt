@@ -55,7 +55,6 @@ ROBOTSTXT_OBEY = False
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     "scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware": 110,
-    "LibDemNews.smartproxy_auth.ProxyMiddleware": 100,
 }
 
 SMARTPROXY_USER = os.environ.get("SMARTPROXY_USER")  ## Smartproxy Username (Sub-user)
@@ -79,12 +78,12 @@ ITEM_PIPELINES = {
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
 AUTOTHROTTLE_ENABLED = True
 # The initial download delay
-AUTOTHROTTLE_START_DELAY = 5
+AUTOTHROTTLE_START_DELAY = 10
 # The maximum download delay to be set in case of high latencies
 AUTOTHROTTLE_MAX_DELAY = 60
 # The average number of requests Scrapy should be sending in parallel to
 # each remote server
-AUTOTHROTTLE_TARGET_CONCURRENCY = 6
+AUTOTHROTTLE_TARGET_CONCURRENCY = 3
 # Enable showing throttling stats for every response received:
 # AUTOTHROTTLE_DEBUG = False
 

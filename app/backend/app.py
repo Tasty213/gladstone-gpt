@@ -1,4 +1,3 @@
-import logging
 import os
 import time
 import boto3
@@ -19,6 +18,7 @@ from callback import AnswerCallback
 from observability import start_opentelemetry
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from langchain.callbacks import get_openai_callback
+from websockets.exceptions import ConnectionClosed
 
 start_opentelemetry.startup()
 tracer = trace.get_tracer("gladstone.app")
@@ -115,8 +115,16 @@ async def websocket_endpoint(websocket: WebSocket):
         )
 
         messageDataTable.add_message(output_message, settings)
-    except WebSocketDisconnect:
-        logging.info("websocket disconnect")
+    except WebSocketDisconnect as e:
+        current_span = trace.get_current_span()
+        current_span.add_event(
+            "websocket closed by client", {"reason": e.reason, "code": e.code}
+        )
+    except ConnectionClosed as e:
+        current_span = trace.get_current_span()
+        current_span.add_event(
+            "websocket connection closed", {"reason": e.reason, "code": e.code}
+        )
     except Exception as e:
         current_span = trace.get_current_span()
         current_span.record_exception(e)

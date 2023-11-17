@@ -106,8 +106,8 @@ class OpentelemetryCallback(AsyncCallbackHandler):
     ) -> None:
         """Run when LLM errors."""
         current_span = trace.get_current_span()
-        current_span.add_event(
-            "on_llm_error",
+        current_span.record_exception(
+            error,
             attributes={
                 "gladstone.llms.run_id": str(run_id),
                 "gladstone.llms.parent_run_id": str(parent_run_id),
@@ -173,8 +173,8 @@ class OpentelemetryCallback(AsyncCallbackHandler):
     ) -> None:
         """Run when chain errors."""
         current_span = trace.get_current_span()
-        current_span.add_event(
-            "on_chain_error",
+        current_span.record_exception(
+            error,
             attributes={
                 "gladstone.llms.run_id": str(run_id),
                 "gladstone.llms.parent_run_id": str(parent_run_id),
@@ -234,8 +234,8 @@ class OpentelemetryCallback(AsyncCallbackHandler):
     ) -> None:
         """Run when tool errors."""
         current_span = trace.get_current_span()
-        current_span.add_event(
-            "on_tool_error",
+        current_span.record_exception(
+            error,
             attributes={
                 "gladstone.llms.run_id": str(run_id),
                 "gladstone.llms.parent_run_id": str(parent_run_id),
@@ -369,8 +369,8 @@ class OpentelemetryCallback(AsyncCallbackHandler):
     ) -> None:
         """Run on retriever error."""
         current_span = trace.get_current_span()
-        current_span.add_event(
-            "on_retriever_error",
+        current_span.record_exception(
+            error,
             attributes={
                 "gladstone.llms.run_id": str(run_id),
                 "gladstone.llms.parent_run_id": str(parent_run_id),

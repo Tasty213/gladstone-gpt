@@ -32,6 +32,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/ingester/ingester/ingest.py",
             "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/ingester/ingester",
             "justMyCode": true
         },
         {

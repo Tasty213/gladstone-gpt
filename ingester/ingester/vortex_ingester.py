@@ -65,7 +65,7 @@ class VortexIngester:
             sha = sha256(chunk.page_content.encode("utf-8")).hexdigest()
             if sha in ids:
                 raise ValueError(
-                    f"Found ID {sha} twice current document is {json.dumps(chunk.metadata)} content is {chunk.page_content}"
+                    f"Found ID {sha} twice current document is {json.dumps(chunk.metadata)} content is {chunk.page_content}"  # pylint: disable=line-too-long
                 )
             ids.add(sha)
 

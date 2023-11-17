@@ -9,7 +9,7 @@ import uvicorn
 from opentelemetry import trace
 from OpentelemetryCallback import OpentelemetryCallback
 from settings.gladstone_settings import GladstoneSettings
-from captcha import captcha_check
+from captcha import QuestionTooLongError, captcha_check, throw_on_long_question
 from schema.message import Message
 from schema.api_question import ApiQuestion
 from messageData import MessageData
@@ -47,6 +47,7 @@ async def websocket_endpoint(websocket: WebSocket):
         # Receive and send back the client message
         question = await websocket.receive_json()
         captcha_check(question.get("captcha"), websocket.client)
+        throw_on_long_question(question)
 
         stream_handler = AnswerCallback(websocket)
         otel_handler = OpentelemetryCallback()
@@ -125,6 +126,16 @@ async def websocket_endpoint(websocket: WebSocket):
         current_span.add_event(
             "websocket connection closed", {"reason": e.reason, "code": e.code}
         )
+    except QuestionTooLongError as e:
+        current_span = trace.get_current_span()
+        current_span.record_exception(e)
+        resp = {
+            "sender": "bot",
+            "message": "Your question was too long to be processed, please phrase your question in less that 250 characters.",
+            "type": "error",
+        }
+        await websocket.send_json(resp)
+
     except Exception as e:
         current_span = trace.get_current_span()
         current_span.record_exception(e)

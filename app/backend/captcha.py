@@ -7,6 +7,10 @@ from opentelemetry import trace
 site_secret_default = os.getenv("RECHAPTCHA_SITE_SECRET")
 
 
+class QuestionTooLongError(Exception):
+    pass
+
+
 def captcha_check(
     captcha_token: str,
     remote_ip: Address,
@@ -41,3 +45,10 @@ def captcha_check(
             raise HTTPException(429, "error captcha check failed")
 
     return success is False
+
+
+def throw_on_long_question(question: dict):
+    sent_question = question.get("messages")[-1]
+
+    if len(sent_question.get("content")) > 250:
+        raise QuestionTooLongError

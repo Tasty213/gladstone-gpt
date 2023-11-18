@@ -91,52 +91,49 @@ class VortexQuery:
     @tracer.start_as_current_span("gladstone.VortexQuery.make_chain")
     def make_chain(
         vector_store: VectorStore,
+        open_ai_costings_handler: AsyncCallbackHandler,
         otel_handler: AsyncCallbackHandler,
         stream_handler: AsyncCallbackHandler,
         local_party_details: str,
         settings: GladstoneSettings,
-        k="4",
-        fetch_k="20",
-        lambda_mult="0.5",
-        temperature="0.7",
     ) -> ConversationalRetrievalChain:
         question_gen_llm = OpenAI(
-            temperature=float(temperature), verbose=True, callbacks=[otel_handler]
+            temperature=settings.temperature, verbose=True, callbacks=[otel_handler]
         )
         question_generator = LLMChain(
             llm=question_gen_llm,
             prompt=CONDENSE_QUESTION_PROMPT,
-            callbacks=[otel_handler],
+            callbacks=[otel_handler, open_ai_costings_handler],
         )
 
         streaming_llm = ChatOpenAI(
             streaming=True,
-            callbacks=[stream_handler, otel_handler],
+            callbacks=[stream_handler, otel_handler, open_ai_costings_handler],
             verbose=True,
-            temperature=float(temperature),
-            model="gpt-3.5-turbo-1106",
+            temperature=settings.temperature,
+            model=settings.model_name,
             max_tokens=settings.max_tokens,
         )
         doc_chain = load_qa_chain(
             streaming_llm,
             chain_type="stuff",
             prompt=VortexQuery.get_chat_prompt_template(local_party_details, settings),
-            callbacks=[otel_handler],
+            callbacks=[otel_handler, open_ai_costings_handler],
         )
 
         qa = ConversationalRetrievalChain(
             retriever=vector_store.as_retriever(
                 search_type="mmr",
                 search_kwargs={
-                    "k": int(k),
-                    "fetch_k": int(fetch_k),
-                    "lambda_mult": float(lambda_mult),
+                    "k": settings.documents_returned,
+                    "fetch_k": settings.documents_considered,
+                    "lambda_mult": settings.lambda_mult,
                 },
             ),
             combine_docs_chain=doc_chain,
             question_generator=question_generator,
             return_source_documents=True,
-            callbacks=[otel_handler],
+            callbacks=[otel_handler, open_ai_costings_handler],
         )
 
         return qa

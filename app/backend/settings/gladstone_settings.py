@@ -14,11 +14,11 @@ class GladstoneSettings:
     collection_name: str = "neonshield-2023-05"
     persist_directory: str = "./query/temp_data/chroma"
 
-    model_name: str = "gpt-4"
-    documents_returned: str = "4"
-    documents_considered: str = "20"
-    lambda_mult: str = "0.5"
-    temperature: str = "0.7"
+    model_name: str = "gpt-3.5-turbo-1106"
+    documents_returned: str = 4
+    documents_considered: str = 20
+    lambda_mult: str = 0.5
+    temperature: str = 0.7
 
     build_directory: str = "../dist"
     document_store_bucket: str = "gladstone-gpt-data"

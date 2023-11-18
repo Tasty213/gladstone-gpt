@@ -11,3 +11,4 @@ database_name_message: "paddy-bot"
 database_region: "eu-west-2"
 document_store_bucket: "paddy-bot-data"
 max_tokens: 4096
+documents_returned: 1

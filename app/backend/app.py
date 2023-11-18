@@ -17,7 +17,7 @@ from query.vortex_query import VortexQuery
 from callback import AnswerCallback
 from observability import start_opentelemetry
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from langchain.callbacks import get_openai_callback
+from langchain.callbacks.openai_info import OpenAICallbackHandler
 from websockets.exceptions import ConnectionClosed
 
 start_opentelemetry.startup()
@@ -51,16 +51,14 @@ async def websocket_endpoint(websocket: WebSocket):
 
         stream_handler = AnswerCallback(websocket)
         otel_handler = OpentelemetryCallback()
+        open_ai_costings_handler = OpenAICallbackHandler()
         qa_chain = VortexQuery.make_chain(
             vector_store,
+            open_ai_costings_handler,
             otel_handler,
             stream_handler,
             question.get("local_party_details"),
             settings,
-            settings.documents_returned,
-            settings.documents_considered,
-            settings.lambda_mult,
-            settings.temperature,
         )
 
         chat_history: list[Message]
@@ -80,20 +78,23 @@ async def websocket_endpoint(websocket: WebSocket):
         }
         await websocket.send_json(start_resp)
 
-        with get_openai_callback() as cb:
-            result = await qa_chain.acall(
-                {
-                    "question": chat_history[-1].message.content,
-                    "chat_history": [
-                        chat_entry.message for chat_entry in chat_history[:-1]
-                    ],
-                }
-            )
-            current_span = trace.get_current_span()
-            current_span.add_event(
-                "message_complete",
-                {"total_tokens": cb.total_tokens, "total_cost": cb.total_cost},
-            )
+        result = await qa_chain.acall(
+            {
+                "question": chat_history[-1].message.content,
+                "chat_history": [
+                    chat_entry.message for chat_entry in chat_history[:-1]
+                ],
+            }
+        )
+
+        current_span = trace.get_current_span()
+        current_span.add_event(
+            "message_complete",
+            {
+                "total_tokens": open_ai_costings_handler.total_tokens,
+                "total_cost": open_ai_costings_handler.total_cost,
+            },
+        )
 
         output_message: Message
         output_message = Message.from_langchain_result(

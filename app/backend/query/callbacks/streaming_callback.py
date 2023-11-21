@@ -3,7 +3,7 @@ from fastapi import WebSocket
 from typing import Any
 
 
-class AnswerCallback(AsyncCallbackHandler):
+class StreamingCallback(AsyncCallbackHandler):
     """Callback handler for streaming LLM responses."""
 
     def __init__(self, websocket: WebSocket):

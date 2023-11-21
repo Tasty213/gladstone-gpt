@@ -1,4 +1,5 @@
 from pathlib import Path
+from fastapi import WebSocket
 from langchain.chains import ConversationalRetrievalChain
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores.chroma import Chroma
@@ -8,7 +9,8 @@ from langchain.prompts import (
     HumanMessagePromptTemplate,
     ChatPromptTemplate,
 )
-from langchain.callbacks.base import AsyncCallbackHandler
+from schema.message import Message
+from query.callbacks.final_answer import FinalAnswerCallback
 from settings.chat_bot_settings import ChatbotSettings
 import os
 import boto3
@@ -19,11 +21,16 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.chat_models import ChatOpenAI
 from langchain.llms import OpenAI
 from opentelemetry import trace
+from OpentelemetryCallback import OpentelemetryCallback
+from query.callbacks.streaming_callback import StreamingCallback
+
 
 tracer = trace.get_tracer("chatbot.vortex_query")
 
 
 class LLMChainFactory:
+    USER_PROMPT = "Question:```{question}```"
+
     @staticmethod
     def download_document_store(settings: ChatbotSettings):
         if not Path(settings.persist_directory).exists():
@@ -66,21 +73,9 @@ class LLMChainFactory:
         )
 
     @staticmethod
-    def get_system_prompt(local_party_details: str, settings: ChatbotSettings) -> str:
-        return settings.system_prompt.replace(
-            "LOCAL_PARTY_DETAILS_PLACEHOLDER", local_party_details
-        )
-
-    @staticmethod
-    def get_user_prompt() -> str:
-        return "Question:```{question}```"
-
-    @staticmethod
-    def get_chat_prompt_template(
-        local_party_details: str, settings: ChatbotSettings
-    ) -> ChatPromptTemplate:
-        system = LLMChainFactory.get_system_prompt(local_party_details, settings)
-        user = LLMChainFactory.get_user_prompt()
+    def get_chat_prompt_template(settings: ChatbotSettings) -> ChatPromptTemplate:
+        system = settings.system_prompt
+        user = LLMChainFactory.USER_PROMPT
         messages = [
             SystemMessagePromptTemplate.from_template(system),
             HumanMessagePromptTemplate.from_template(user),
@@ -91,24 +86,29 @@ class LLMChainFactory:
     @tracer.start_as_current_span("chatbot.VortexQuery.make_chain")
     def make_chain(
         vector_store: VectorStore,
-        open_ai_costings_handler: AsyncCallbackHandler,
-        otel_handler: AsyncCallbackHandler,
-        stream_handler: AsyncCallbackHandler,
-        local_party_details: str,
         settings: ChatbotSettings,
+        websocket: WebSocket,
+        previous_message: Message,
+        message_data_table,
     ) -> ConversationalRetrievalChain:
+        stream_handler = StreamingCallback(websocket)
+        final_answer_handler = FinalAnswerCallback(
+            websocket, previous_message, message_data_table
+        )
+        otel_handler = OpentelemetryCallback()
+
         question_gen_llm = OpenAI(
             temperature=settings.temperature, verbose=True, callbacks=[otel_handler]
         )
         question_generator = LLMChain(
             llm=question_gen_llm,
             prompt=CONDENSE_QUESTION_PROMPT,
-            callbacks=[otel_handler, open_ai_costings_handler],
+            callbacks=[otel_handler],
         )
 
         streaming_llm = ChatOpenAI(
             streaming=True,
-            callbacks=[stream_handler, otel_handler, open_ai_costings_handler],
+            callbacks=[stream_handler, otel_handler],
             verbose=True,
             temperature=settings.temperature,
             model=settings.model_name,
@@ -117,10 +117,8 @@ class LLMChainFactory:
         doc_chain = load_qa_chain(
             streaming_llm,
             chain_type="stuff",
-            prompt=LLMChainFactory.get_chat_prompt_template(
-                local_party_details, settings
-            ),
-            callbacks=[otel_handler, open_ai_costings_handler],
+            prompt=LLMChainFactory.get_chat_prompt_template(settings),
+            callbacks=[otel_handler],
         )
 
         qa = ConversationalRetrievalChain(
@@ -135,7 +133,7 @@ class LLMChainFactory:
             combine_docs_chain=doc_chain,
             question_generator=question_generator,
             return_source_documents=True,
-            callbacks=[otel_handler, open_ai_costings_handler],
+            callbacks=[final_answer_handler, otel_handler],
         )
 
         return qa

@@ -12,19 +12,20 @@ tracer = trace.get_tracer("chatbot.messageData")
 class MessageData:
     """Encapsulates an Amazon DynamoDB table of movie data."""
 
-    def __init__(self, table):
+    def __init__(self, table, settings: ChatbotSettings):
         """
         :param dyn_resource: A Boto3 DynamoDB resource.
         """
         self.table = table
         self.logger = logging.getLogger()
+        self.settings = settings
 
-    def add_message(self, question: Message, settings: ChatbotSettings):
+    def add_message(self, question: Message):
         with tracer.start_as_current_span(
             "chatbot.MessageData.add_message",
             attributes={
                 "db.system": "dynamodb",
-                "db.name": settings.database_name_message,
+                "db.name": self.settings.database_name_message,
             },
             kind=trace.SpanKind.CLIENT,
         ):

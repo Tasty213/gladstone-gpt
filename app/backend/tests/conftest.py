@@ -1,7 +1,7 @@
 from pytest import MonkeyPatch
 import pytest
 
-from app.backend.settings.chat_bot_settings import ChatbotSettings
+from settings.chat_bot_settings import ChatbotSettings
 
 monkey_patch = MonkeyPatch()
 monkey_patch.setenv("OPENAI_API_KEY", "FAKE_API_KEY")

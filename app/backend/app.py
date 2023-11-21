@@ -14,7 +14,6 @@ from schema.message import Message
 from schema.api_question import ApiQuestion
 from messageData import MessageData
 from query.vortex_query import VortexQuery
-from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from callback import AnswerCallback
 from observability import start_opentelemetry
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
@@ -30,7 +29,6 @@ with tracer.start_as_current_span("app.startup") as span:
     settings = ChatbotSettings.from_yaml(settings_filepath)
 
     app = FastAPI()
-    app.add_middleware(HTTPSRedirectMiddleware)
 
     vector_store = VortexQuery.get_vector_store(settings)
 

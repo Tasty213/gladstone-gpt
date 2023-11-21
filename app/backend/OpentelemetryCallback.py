@@ -29,8 +29,8 @@ class OpentelemetryCallback(AsyncCallbackHandler):
         current_span.add_event(
             "on_llm_start",
             attributes={
-                "gladstone.llms.run_id": str(run_id),
-                "gladstone.llms.parent_run_id": str(parent_run_id),
+                "chatbot.llms.run_id": str(run_id),
+                "chatbot.llms.parent_run_id": str(parent_run_id),
             },
         )
 
@@ -50,9 +50,9 @@ class OpentelemetryCallback(AsyncCallbackHandler):
         current_span.add_event(
             "on_chat_model_start",
             attributes={
-                "gladstone.llms.id": "_".join(serialized.get("id")),
-                "gladstone.llms.run_id": str(run_id),
-                "gladstone.llms.parent_run_id": str(parent_run_id),
+                "chatbot.llms.id": "_".join(serialized.get("id")),
+                "chatbot.llms.run_id": str(run_id),
+                "chatbot.llms.parent_run_id": str(parent_run_id),
             },
         )
 
@@ -71,8 +71,8 @@ class OpentelemetryCallback(AsyncCallbackHandler):
         current_span.add_event(
             "on_llm_new_token",
             attributes={
-                "gladstone.llms.run_id": str(run_id),
-                "gladstone.llms.parent_run_id": str(parent_run_id),
+                "chatbot.llms.run_id": str(run_id),
+                "chatbot.llms.parent_run_id": str(parent_run_id),
             },
         )
 
@@ -90,8 +90,8 @@ class OpentelemetryCallback(AsyncCallbackHandler):
         current_span.add_event(
             "on_llm_end",
             attributes={
-                "gladstone.llms.run_id": str(run_id),
-                "gladstone.llms.parent_run_id": str(parent_run_id),
+                "chatbot.llms.run_id": str(run_id),
+                "chatbot.llms.parent_run_id": str(parent_run_id),
             },
         )
 
@@ -109,8 +109,8 @@ class OpentelemetryCallback(AsyncCallbackHandler):
         current_span.record_exception(
             error,
             attributes={
-                "gladstone.llms.run_id": str(run_id),
-                "gladstone.llms.parent_run_id": str(parent_run_id),
+                "chatbot.llms.run_id": str(run_id),
+                "chatbot.llms.parent_run_id": str(parent_run_id),
             },
         )
 
@@ -130,13 +130,13 @@ class OpentelemetryCallback(AsyncCallbackHandler):
         current_span.add_event(
             "on_chain_start",
             attributes={
-                "gladstone.llms.id": "_".join(serialized.get("id")),
-                "gladstone.llms.run_id": str(run_id),
-                "gladstone.llms.question": inputs.get("question", "no question found"),
-                "gladstone.llms.documents": self.get_documents_metadata_from_input(
+                "chatbot.llms.id": "_".join(serialized.get("id")),
+                "chatbot.llms.run_id": str(run_id),
+                "chatbot.llms.question": inputs.get("question", "no question found"),
+                "chatbot.llms.documents": self.get_documents_metadata_from_input(
                     inputs.get("input_documents", [])
                 ),
-                "gladstone.llms.parent_run_id": str(parent_run_id),
+                "chatbot.llms.parent_run_id": str(parent_run_id),
             },
         )
 
@@ -157,8 +157,8 @@ class OpentelemetryCallback(AsyncCallbackHandler):
         current_span.add_event(
             "on_chain_end",
             attributes={
-                "gladstone.llms.run_id": str(run_id),
-                "gladstone.llms.parent_run_id": str(parent_run_id),
+                "chatbot.llms.run_id": str(run_id),
+                "chatbot.llms.parent_run_id": str(parent_run_id),
             },
         )
 
@@ -176,8 +176,8 @@ class OpentelemetryCallback(AsyncCallbackHandler):
         current_span.record_exception(
             error,
             attributes={
-                "gladstone.llms.run_id": str(run_id),
-                "gladstone.llms.parent_run_id": str(parent_run_id),
+                "chatbot.llms.run_id": str(run_id),
+                "chatbot.llms.parent_run_id": str(parent_run_id),
             },
         )
 
@@ -197,10 +197,10 @@ class OpentelemetryCallback(AsyncCallbackHandler):
         current_span.add_event(
             "on_tool_start",
             attributes={
-                "gladstone.llms.id": "_".join(serialized.get("id")),
-                "gladstone.llms.input_string": input_str,
-                "gladstone.llms.run_id": str(run_id),
-                "gladstone.llms.parent_run_id": str(parent_run_id),
+                "chatbot.llms.id": "_".join(serialized.get("id")),
+                "chatbot.llms.input_string": input_str,
+                "chatbot.llms.run_id": str(run_id),
+                "chatbot.llms.parent_run_id": str(parent_run_id),
             },
         )
 
@@ -218,8 +218,8 @@ class OpentelemetryCallback(AsyncCallbackHandler):
         current_span.add_event(
             "on_tool_end",
             attributes={
-                "gladstone.llms.run_id": str(run_id),
-                "gladstone.llms.parent_run_id": str(parent_run_id),
+                "chatbot.llms.run_id": str(run_id),
+                "chatbot.llms.parent_run_id": str(parent_run_id),
             },
         )
 
@@ -237,8 +237,8 @@ class OpentelemetryCallback(AsyncCallbackHandler):
         current_span.record_exception(
             error,
             attributes={
-                "gladstone.llms.run_id": str(run_id),
-                "gladstone.llms.parent_run_id": str(parent_run_id),
+                "chatbot.llms.run_id": str(run_id),
+                "chatbot.llms.parent_run_id": str(parent_run_id),
             },
         )
 
@@ -256,8 +256,8 @@ class OpentelemetryCallback(AsyncCallbackHandler):
         current_span.add_event(
             "on_text",
             attributes={
-                "gladstone.llms.run_id": str(run_id),
-                "gladstone.llms.parent_run_id": str(parent_run_id),
+                "chatbot.llms.run_id": str(run_id),
+                "chatbot.llms.parent_run_id": str(parent_run_id),
             },
         )
 
@@ -274,8 +274,8 @@ class OpentelemetryCallback(AsyncCallbackHandler):
         current_span.add_event(
             "on_retry",
             attributes={
-                "gladstone.llms.run_id": str(run_id),
-                "gladstone.llms.parent_run_id": str(parent_run_id),
+                "chatbot.llms.run_id": str(run_id),
+                "chatbot.llms.parent_run_id": str(parent_run_id),
             },
         )
 
@@ -293,8 +293,8 @@ class OpentelemetryCallback(AsyncCallbackHandler):
         current_span.add_event(
             "on_agent_action",
             attributes={
-                "gladstone.llms.run_id": str(run_id),
-                "gladstone.llms.parent_run_id": str(parent_run_id),
+                "chatbot.llms.run_id": str(run_id),
+                "chatbot.llms.parent_run_id": str(parent_run_id),
             },
         )
 
@@ -312,8 +312,8 @@ class OpentelemetryCallback(AsyncCallbackHandler):
         current_span.add_event(
             "on_agent_finish",
             attributes={
-                "gladstone.llms.run_id": str(run_id),
-                "gladstone.llms.parent_run_id": str(parent_run_id),
+                "chatbot.llms.run_id": str(run_id),
+                "chatbot.llms.parent_run_id": str(parent_run_id),
             },
         )
 
@@ -333,9 +333,9 @@ class OpentelemetryCallback(AsyncCallbackHandler):
         current_span.add_event(
             "on_retriever_start",
             attributes={
-                "gladstone.llms.id": "_".join(serialized.get("id")),
-                "gladstone.llms.run_id": str(run_id),
-                "gladstone.llms.parent_run_id": str(parent_run_id),
+                "chatbot.llms.id": "_".join(serialized.get("id")),
+                "chatbot.llms.run_id": str(run_id),
+                "chatbot.llms.parent_run_id": str(parent_run_id),
             },
         )
 
@@ -353,8 +353,8 @@ class OpentelemetryCallback(AsyncCallbackHandler):
         current_span.add_event(
             "on_retriever_end",
             attributes={
-                "gladstone.llms.run_id": str(run_id),
-                "gladstone.llms.parent_run_id": str(parent_run_id),
+                "chatbot.llms.run_id": str(run_id),
+                "chatbot.llms.parent_run_id": str(parent_run_id),
             },
         )
 
@@ -372,7 +372,7 @@ class OpentelemetryCallback(AsyncCallbackHandler):
         current_span.record_exception(
             error,
             attributes={
-                "gladstone.llms.run_id": str(run_id),
-                "gladstone.llms.parent_run_id": str(parent_run_id),
+                "chatbot.llms.run_id": str(run_id),
+                "chatbot.llms.parent_run_id": str(parent_run_id),
             },
         )

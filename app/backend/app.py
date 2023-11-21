@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 import uvicorn
 from opentelemetry import trace
 from OpentelemetryCallback import OpentelemetryCallback
-from settings.gladstone_settings import GladstoneSettings
+from settings.chat_bot_settings import ChatbotSettings
 from captcha import QuestionTooLongError, captcha_check, throw_on_long_question
 from schema.message import Message
 from schema.api_question import ApiQuestion
@@ -21,12 +21,12 @@ from langchain.callbacks.openai_info import OpenAICallbackHandler
 from websockets.exceptions import ConnectionClosed
 
 start_opentelemetry.startup()
-tracer = trace.get_tracer("gladstone.app")
+tracer = trace.get_tracer("chatbot.app")
 
 botocore.session.get_session()
 with tracer.start_as_current_span("app.startup") as span:
     settings_filepath = os.getenv("SETTINGS_FILEPATH", "./settings/test_settings.yaml")
-    settings = GladstoneSettings.from_yaml(settings_filepath)
+    settings = ChatbotSettings.from_yaml(settings_filepath)
 
     app = FastAPI()
 

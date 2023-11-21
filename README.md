@@ -1,6 +1,6 @@
-# [Gladstone-GPT](https://gladstone-gpt-87ede1bc199a.herokuapp.com/)
-## The unofficial Liberal Democrat chatbot
-With access to all Liberal Democrat policy since 2019 including blog posts from the federal party website, Gladstone can answer most questions about what the Lib Dems would do in government.
+# [Chat Bots](https://libby-87ede1bc199a.herokuapp.com/)
+## A toolkit for easily building chatbots for the Lib Dems
+This repo contains a number of tools that can be used to build and deploy a chatbot with access to a document store for answering questions. At the moment it is in testing to be used as a policy helper and tech support bot.
 
 Technologies/Tools/Libraries used:
 * Scrapy to mine party policy from the website
@@ -13,7 +13,9 @@ Technologies/Tools/Libraries used:
 * NewRelic to interpret OpenTelementry tracing and metrics data
 
 ### Try it out!
-[Try our Gladstone GPT](https://gladstone-gpt-87ede1bc199a.herokuapp.com/)
+There are two variants:
+ * [Libby](https://gladstone-gpt-87ede1bc199a.herokuapp.com/) answers questions on policy
+ * [Paddy](https://paddy-bot-5e9cf3845120.herokuapp.com/) provides tech support
 
 ## How does it work?
 

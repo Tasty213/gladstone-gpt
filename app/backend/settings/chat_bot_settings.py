@@ -5,7 +5,7 @@ import yaml
 
 # pylint: disable=too-many-instance-attributes
 @dataclass
-class GladstoneSettings:
+class ChatbotSettings:
     system_prompt: str
     database_region: str
     database_name_message: str

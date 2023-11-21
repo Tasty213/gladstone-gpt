@@ -1,7 +1,7 @@
 from pytest import MonkeyPatch
 import pytest
 
-from settings.gladstone_settings import GladstoneSettings
+from app.backend.settings.chat_bot_settings import ChatbotSettings
 
 monkey_patch = MonkeyPatch()
 monkey_patch.setenv("OPENAI_API_KEY", "FAKE_API_KEY")
@@ -9,4 +9,4 @@ monkey_patch.setenv("OPENAI_API_KEY", "FAKE_API_KEY")
 
 @pytest.fixture()
 def mock_settings():
-    return GladstoneSettings("Mock System prompt", "not-a-region", "not-a-database", 1)
+    return ChatbotSettings("Mock System prompt", "not-a-region", "not-a-database", 1)

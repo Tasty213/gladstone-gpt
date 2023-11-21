@@ -2,11 +2,11 @@ import logging
 
 from botocore.exceptions import ClientError
 from opentelemetry import trace
-from settings.gladstone_settings import GladstoneSettings
+from settings.chat_bot_settings import ChatbotSettings
 
 from schema.api_question import Message
 
-tracer = trace.get_tracer("gladstone.messageData")
+tracer = trace.get_tracer("chatbot.messageData")
 
 
 class MessageData:
@@ -19,9 +19,9 @@ class MessageData:
         self.table = table
         self.logger = logging.getLogger()
 
-    def add_message(self, question: Message, settings: GladstoneSettings):
+    def add_message(self, question: Message, settings: ChatbotSettings):
         with tracer.start_as_current_span(
-            "gladstone.MessageData.add_message",
+            "chatbot.MessageData.add_message",
             attributes={
                 "db.system": "dynamodb",
                 "db.name": settings.database_name_message,

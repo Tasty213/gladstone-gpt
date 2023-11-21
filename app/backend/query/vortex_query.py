@@ -9,7 +9,7 @@ from langchain.prompts import (
     ChatPromptTemplate,
 )
 from langchain.callbacks.base import AsyncCallbackHandler
-from settings.gladstone_settings import GladstoneSettings
+from settings.chat_bot_settings import ChatbotSettings
 import os
 import boto3
 
@@ -20,18 +20,18 @@ from langchain.chat_models import ChatOpenAI
 from langchain.llms import OpenAI
 from opentelemetry import trace
 
-tracer = trace.get_tracer("gladstone.vortex_query")
+tracer = trace.get_tracer("chatbot.vortex_query")
 
 
 class VortexQuery:
     @staticmethod
-    def download_document_store(settings: GladstoneSettings):
+    def download_document_store(settings: ChatbotSettings):
         if not Path(settings.persist_directory).exists():
             VortexQuery.download_data(settings)
 
     @staticmethod
-    @tracer.start_as_current_span("gladstone.VortexQuery.download_data")
-    def download_data(settings: GladstoneSettings):
+    @tracer.start_as_current_span("chatbot.VortexQuery.download_data")
+    def download_data(settings: ChatbotSettings):
         """
         Download the contents of a folder directory
         Args:
@@ -54,8 +54,8 @@ class VortexQuery:
             bucket.download_file(obj.key, target)
 
     @staticmethod
-    @tracer.start_as_current_span("gladstone.VortexQuery.get_vector_store")
-    def get_vector_store(settings: GladstoneSettings) -> VectorStore:
+    @tracer.start_as_current_span("chatbot.VortexQuery.get_vector_store")
+    def get_vector_store(settings: ChatbotSettings) -> VectorStore:
         VortexQuery.download_document_store(settings)
         embedding = OpenAIEmbeddings(client=None)
 
@@ -66,7 +66,7 @@ class VortexQuery:
         )
 
     @staticmethod
-    def get_system_prompt(local_party_details: str, settings: GladstoneSettings) -> str:
+    def get_system_prompt(local_party_details: str, settings: ChatbotSettings) -> str:
         return settings.system_prompt.replace(
             "LOCAL_PARTY_DETAILS_PLACEHOLDER", local_party_details
         )
@@ -77,7 +77,7 @@ class VortexQuery:
 
     @staticmethod
     def get_chat_prompt_template(
-        local_party_details: str, settings: GladstoneSettings
+        local_party_details: str, settings: ChatbotSettings
     ) -> ChatPromptTemplate:
         system = VortexQuery.get_system_prompt(local_party_details, settings)
         user = VortexQuery.get_user_prompt()
@@ -88,14 +88,14 @@ class VortexQuery:
         return ChatPromptTemplate.from_messages(messages)
 
     @staticmethod
-    @tracer.start_as_current_span("gladstone.VortexQuery.make_chain")
+    @tracer.start_as_current_span("chatbot.VortexQuery.make_chain")
     def make_chain(
         vector_store: VectorStore,
         open_ai_costings_handler: AsyncCallbackHandler,
         otel_handler: AsyncCallbackHandler,
         stream_handler: AsyncCallbackHandler,
         local_party_details: str,
-        settings: GladstoneSettings,
+        settings: ChatbotSettings,
     ) -> ConversationalRetrievalChain:
         question_gen_llm = OpenAI(
             temperature=settings.temperature, verbose=True, callbacks=[otel_handler]

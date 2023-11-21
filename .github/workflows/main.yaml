@@ -73,7 +73,7 @@ jobs:
         email: ${{ secrets.HEROKU_EMAIL }}
         heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
         dockerfile_directory: ./app
-        docker_options: '--build-arg settings_filepath=/app/backend/settings/live_settings/gladstone.yaml'
+        docker_options: '--build-arg settings_filepath=/app/backend/settings/live_settings/libby.yaml'
     - uses: gonuit/heroku-docker-deploy@v1.3.3
       name: Build, Push and Release a Docker container to Heroku.
       with:

@@ -34,10 +34,10 @@ def captcha_check(
         current_span.add_event(
             "failed_captcha",
             attributes={
-                "gladstone.captcha.status": str(success),
-                "gladstone.captcha.challenge_ts": str(response.get("challenge_ts")),
-                "gladstone.captcha.hostname": str(response.get("hostname")),
-                "gladstone.captcha.error-codes": ",".join(response.get("error-codes")),
+                "chatbot.captcha.status": str(success),
+                "chatbot.captcha.challenge_ts": str(response.get("challenge_ts")),
+                "chatbot.captcha.hostname": str(response.get("hostname")),
+                "chatbot.captcha.error-codes": ",".join(response.get("error-codes")),
             },
         )
 

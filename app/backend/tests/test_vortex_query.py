@@ -1,4 +1,4 @@
-from app.backend.settings.chat_bot_settings import ChatbotSettings
+from settings.chat_bot_settings import ChatbotSettings
 from query.vortex_query import VortexQuery
 from langchain.prompts import ChatPromptTemplate
 

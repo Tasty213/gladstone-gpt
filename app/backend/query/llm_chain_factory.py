@@ -22,7 +22,7 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.chat_models import ChatOpenAI
 from langchain.llms import OpenAI
 from opentelemetry import trace
-from OpentelemetryCallback import OpentelemetryCallback
+from query.callbacks.otel_callback import OpentelemetryCallback
 from query.callbacks.streaming_callback import StreamingCallback
 
 

@@ -17,13 +17,12 @@ class QuestionHandler:
         settings: ChatbotSettings,
         messageDataTable: MessageData,
     ):
-        self.vector_store = vector_store
-        self.settings = settings
-        self.messageDataTable = messageDataTable
+        self.llm_chain_factory = LLMChainFactory(
+            messageDataTable, vector_store, settings
+        )
 
     async def handle_question(self, websocket: WebSocket) -> Coroutine:
         try:
-            # Receive and send back the client message
             question = await websocket.receive_json()
             captcha_check(question.get("captcha"), websocket.client)
             throw_on_long_question(question)
@@ -33,12 +32,9 @@ class QuestionHandler:
                 question.get("messages")
             ).message_history
 
-            qa_chain = LLMChainFactory.make_chain(
-                self.vector_store,
-                self.settings,
+            qa_chain = self.llm_chain_factory.make_chain(
                 websocket,
                 chat_history[-1],
-                self.messageDataTable,
             )
 
             return await qa_chain.acall(

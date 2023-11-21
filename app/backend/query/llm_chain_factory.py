@@ -9,6 +9,7 @@ from langchain.prompts import (
     HumanMessagePromptTemplate,
     ChatPromptTemplate,
 )
+from messageData import MessageData
 from schema.message import Message
 from query.callbacks.final_answer import FinalAnswerCallback
 from settings.chat_bot_settings import ChatbotSettings
@@ -30,6 +31,16 @@ tracer = trace.get_tracer("chatbot.vortex_query")
 
 class LLMChainFactory:
     USER_PROMPT = "Question:```{question}```"
+
+    def __init__(
+        self,
+        message_data_table: MessageData,
+        vector_store: VectorStore,
+        settings: ChatbotSettings,
+    ):
+        self.message_data_table = message_data_table
+        self.vector_store = vector_store
+        self.settings = settings
 
     @staticmethod
     def download_document_store(settings: ChatbotSettings):
@@ -82,23 +93,22 @@ class LLMChainFactory:
         ]
         return ChatPromptTemplate.from_messages(messages)
 
-    @staticmethod
     @tracer.start_as_current_span("chatbot.VortexQuery.make_chain")
     def make_chain(
-        vector_store: VectorStore,
-        settings: ChatbotSettings,
+        self,
         websocket: WebSocket,
         previous_message: Message,
-        message_data_table,
     ) -> ConversationalRetrievalChain:
         stream_handler = StreamingCallback(websocket)
         final_answer_handler = FinalAnswerCallback(
-            websocket, previous_message, message_data_table
+            websocket, previous_message, self.message_data_table
         )
         otel_handler = OpentelemetryCallback()
 
         question_gen_llm = OpenAI(
-            temperature=settings.temperature, verbose=True, callbacks=[otel_handler]
+            temperature=self.settings.temperature,
+            verbose=True,
+            callbacks=[otel_handler],
         )
         question_generator = LLMChain(
             llm=question_gen_llm,
@@ -110,24 +120,24 @@ class LLMChainFactory:
             streaming=True,
             callbacks=[stream_handler, otel_handler],
             verbose=True,
-            temperature=settings.temperature,
-            model=settings.model_name,
-            max_tokens=settings.max_tokens,
+            temperature=self.settings.temperature,
+            model=self.settings.model_name,
+            max_tokens=self.settings.max_tokens,
         )
         doc_chain = load_qa_chain(
             streaming_llm,
             chain_type="stuff",
-            prompt=LLMChainFactory.get_chat_prompt_template(settings),
+            prompt=LLMChainFactory.get_chat_prompt_template(self.settings),
             callbacks=[otel_handler],
         )
 
         qa = ConversationalRetrievalChain(
-            retriever=vector_store.as_retriever(
+            retriever=self.vector_store.as_retriever(
                 search_type="mmr",
                 search_kwargs={
-                    "k": settings.documents_returned,
-                    "fetch_k": settings.documents_considered,
-                    "lambda_mult": settings.lambda_mult,
+                    "k": self.settings.documents_returned,
+                    "fetch_k": self.settings.documents_considered,
+                    "lambda_mult": self.settings.lambda_mult,
                 },
             ),
             combine_docs_chain=doc_chain,

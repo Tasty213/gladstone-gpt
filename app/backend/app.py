@@ -1,4 +1,3 @@
-import asyncio
 import os
 import boto3
 import botocore.exceptions

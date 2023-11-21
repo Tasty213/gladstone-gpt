@@ -5,8 +5,8 @@
   "license": "MIT",
   "scripts": {
     "clean": "rimraf dist",
-    "build": "parcel build ./frontend/index.html",
-    "build:dev": "parcel watch ./frontend/index.html",
+    "build": "parcel build ./src/index.html",
+    "build:dev": "parcel watch ./src/index.html",
     "deploy": "npm run clean && npm run build && git add ./dist && git commit -m 'Build frontend'; git push heroku master"
   },
   "dependencies": {

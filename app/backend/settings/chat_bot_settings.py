@@ -20,7 +20,7 @@ class ChatbotSettings:
     lambda_mult: str = 0.5
     temperature: str = 0.7
 
-    build_directory: str = "../dist"
+    build_directory: str = "../frontend/dist"
     document_store_bucket: str = "gladstone-gpt-data"
 
     @classmethod

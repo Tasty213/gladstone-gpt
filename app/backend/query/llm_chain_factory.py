@@ -23,11 +23,11 @@ from opentelemetry import trace
 tracer = trace.get_tracer("chatbot.vortex_query")
 
 
-class VortexQuery:
+class LLMChainFactory:
     @staticmethod
     def download_document_store(settings: ChatbotSettings):
         if not Path(settings.persist_directory).exists():
-            VortexQuery.download_data(settings)
+            LLMChainFactory.download_data(settings)
 
     @staticmethod
     @tracer.start_as_current_span("chatbot.VortexQuery.download_data")
@@ -56,7 +56,7 @@ class VortexQuery:
     @staticmethod
     @tracer.start_as_current_span("chatbot.VortexQuery.get_vector_store")
     def get_vector_store(settings: ChatbotSettings) -> VectorStore:
-        VortexQuery.download_document_store(settings)
+        LLMChainFactory.download_document_store(settings)
         embedding = OpenAIEmbeddings(client=None)
 
         return Chroma(
@@ -79,8 +79,8 @@ class VortexQuery:
     def get_chat_prompt_template(
         local_party_details: str, settings: ChatbotSettings
     ) -> ChatPromptTemplate:
-        system = VortexQuery.get_system_prompt(local_party_details, settings)
-        user = VortexQuery.get_user_prompt()
+        system = LLMChainFactory.get_system_prompt(local_party_details, settings)
+        user = LLMChainFactory.get_user_prompt()
         messages = [
             SystemMessagePromptTemplate.from_template(system),
             HumanMessagePromptTemplate.from_template(user),
@@ -117,7 +117,9 @@ class VortexQuery:
         doc_chain = load_qa_chain(
             streaming_llm,
             chain_type="stuff",
-            prompt=VortexQuery.get_chat_prompt_template(local_party_details, settings),
+            prompt=LLMChainFactory.get_chat_prompt_template(
+                local_party_details, settings
+            ),
             callbacks=[otel_handler, open_ai_costings_handler],
         )
 

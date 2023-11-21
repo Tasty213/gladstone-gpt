@@ -1,8 +1,8 @@
-from query.vortex_query import VortexQuery
+from query.llm_chain_factory import LLMChainFactory
 
 
 def main():
-    vortex_query = VortexQuery()
+    vortex_query = LLMChainFactory()
 
     while True:
         print()

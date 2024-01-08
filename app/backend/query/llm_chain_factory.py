@@ -109,7 +109,7 @@ class LLMChainFactory:
             temperature=self.settings.temperature,
             verbose=True,
             callbacks=[otel_handler],
-            model_name=self.settings.model_name,
+            model_name="gpt-3.5-turbo-instruct",
         )
         question_generator = LLMChain(
             llm=question_gen_llm,

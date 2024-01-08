@@ -109,6 +109,7 @@ class LLMChainFactory:
             temperature=self.settings.temperature,
             verbose=True,
             callbacks=[otel_handler],
+            model_name=self.settings.model_name,
         )
         question_generator = LLMChain(
             llm=question_gen_llm,

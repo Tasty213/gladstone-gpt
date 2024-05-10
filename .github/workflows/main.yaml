@@ -82,6 +82,14 @@ jobs:
         heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
         dockerfile_directory: ./app
         docker_options: '--build-arg settings_filepath=/app/backend/settings/live_settings/paddy.yaml'
+    - uses: gonuit/heroku-docker-deploy@v1.3.3
+      name: Build, Push and Release a Docker container to Heroku.
+      with:
+        heroku_app_name: ${{ secrets.HEROKU_ALDE_APP_NAME }}
+        email: ${{ secrets.HEROKU_EMAIL }}
+        heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+        dockerfile_directory: ./app
+        docker_options: '--build-arg settings_filepath=/app/backend/settings/live_settings/alde.yaml'
         
     - name: Set Release Version from Tag
       run: echo "RELEASE_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV

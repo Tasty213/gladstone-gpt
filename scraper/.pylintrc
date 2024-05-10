@@ -442,7 +442,8 @@ disable=raw-checker-failed,
         line-too-long,
         useless-object-inheritance,
         super-init-not-called,
-        arguments-differ
+        arguments-differ,
+        use-yield-from
 
 
 
